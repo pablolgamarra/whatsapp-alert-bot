@@ -1,24 +1,20 @@
-const {Sticker, createSticker, StickerTypes} = require('wa-sticker-formatter');
-const fs = require('fs');
+const sharp = require('sharp');
+const client = require('../../../index.js');
 
-function base64Decoder(data){
-    const buff = new Buffer.alloc(data, 'base64');
-    fs.writeFile('./src/media/created/image.png', buff, {encoding : 'base64'}, (err)=>{
-        err ? console.log(err) : console.log('File created');
-    });
+let image, buff;
+async function downloadMsgMedia(msg){
+    try {
+        const {data} = await msg.downloadMedia();
+        buff = Buffer.from(data, 'base64');
+        image = await sharp(buff).resize(512,512).toFile('output.webp', (err)=>{
+            console.log(err);
+        });
+        console.log('Sticker Created');
+    } catch (error) {
+        if(error){
+            console.log(`HA OCURRIDO UN ERROR AL DESCARGAR LA IMAGEN/VIDEO.\nError: ${err}`);
+        }            
+    }
 }
 
-function stickerCreator (image) {
-    const sticker = new Sticker(image ,{
-        pack : 'My Pack',
-        author : '@TowelBot',
-        type : StickerTypes.FULL,
-        id : '12345',
-        quality : 50,
-        background : '#000000'
-    });
-
-    sticker.toFile('sticker.webp');
-}
-
-module.exports = {stickerCreator, base64Decoder};
+module.exports = {downloadMsgMedia};

@@ -4,7 +4,7 @@
   "description": "A basic bot that response the messages at whatsapp",
   "main": "index.js",
   "scripts": {
-    "start": "node src/ndex.js",
+    "start": "node src/index.js",
     "run": "nodemon src/index.js",
     "test": "test"
   },
