@@ -1,6 +1,6 @@
 # node_bot_for_whatsapp
 
->[!NOTE] **IN DEVELOPMENT**
+> **IN DEVELOPMENT**
 
 ## **Expected FUNCTIONS**
 1. Auto-Response to predefined messages
