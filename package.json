@@ -1,6 +1,6 @@
 {
   "name": "node_bot_for_whatsapp",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "A basic bot that response the messages at whatsapp",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,6 @@
     "nodemon": "^2.0.16",
     "qrcode-terminal": "^0.12.0",
     "sharp": "^0.30.3",
-    "wa-sticker-formatter": "^4.3.2",
     "whatsapp-web.js": "^1.16.6"
   },
   "dev-dependencies": {

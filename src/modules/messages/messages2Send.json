@@ -11,12 +11,13 @@
 
     "!Sticker":
     {
-        "body" : "Acá va a convertir a Sticker las imagenes que le envias, pero bueno"
+        "correct" : "Acá va a convertir a Sticker las imagenes que le envias, pero bueno",
+        "notSticker" : "Se tiene que enviar una imagen o video para poder convertirse a sticker"
     },
 
     "!Audio":
     {
-        "body" : "Audio no puedo escuchar. Soy un robot, boludo."
+        "body" : "En un momento será respondido por un agente."
     },
 
     "!Hola":

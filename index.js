@@ -1,9 +1,7 @@
-const {Client, LocalAuth, MessageMedia} = require('whatsapp-web.js');
-const fs = require('fs');
+const {Client, LocalAuth} = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const messages2send = require('./src/modules/messages/messages2Send.json');
-const {downloadMsgMedia} = require('./src/modules/stickerCreator/app.js');
-const sharp = require('sharp');
+const {createSticker} = require('./src/modules/stickerCreator/app.js');
 const WAWebJS = require('whatsapp-web.js');
 
 const client = new Client({
@@ -59,23 +57,14 @@ client.on('message',(msg)=>{
             break;
         case '!Sticker':
             if((type === WAWebJS.MessageTypes.IMAGE) || (type === WAWebJS.MessageTypes.VIDEO)){
-                downloadMsgMedia(msg);
-                let data = 
-                msg2send = new MessageMedia('.webp', data, 'Pablo');
-                try {
-                    client.sendMessage(from, msg2send,{sendMediaAsSticker : true})
-                        .then(()=>{
-                            console.log('Sticker Sended');
-                        })
-                } catch (error) {
-                    if(error){
-                        console.log(`An error was happened. Error: ${error}`);
-                    }
-                }
-                msg.reply(msg2send);
+                createSticker(msg,from);
+                // .then(()=>{
+                //     // msg2send = MessageMedia.fromFilePath('src/media/created/output.webp');
+                //     // msg.reply(msg2send, from, {sendMediaAsSticker : true, stickerAuthor : 'wp-bot @Towel15'});
+                // })
+            }else{
+                msg2send = messages2send['!Sticker'].notSticker;
             }
-            msg2send = messages2send['!Sticker'].body;
-            msg.reply(msg2send);
             console.log('Bot Command Responsed');
             break;
         case '!Audio':

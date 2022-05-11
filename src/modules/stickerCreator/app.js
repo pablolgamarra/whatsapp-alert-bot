@@ -1,20 +1,32 @@
 const sharp = require('sharp');
-const client = require('../../../index.js');
+const {MessageMedia} = require('whatsapp-web.js');
+const {Buffer} = require('node:buffer');
 
-let image, buff;
-async function downloadMsgMedia(msg){
+async function createSticker(msg, from){
+    //Creating the .webp file
     try {
         const {data} = await msg.downloadMedia();
         buff = Buffer.from(data, 'base64');
-        image = await sharp(buff).resize(512,512).toFile('output.webp', (err)=>{
-            console.log(err);
+        image = sharp(buff)
+            .resize({
+                width : 512,
+                height : 512,
+                fit : 'contain'
+            });
+        await image.toFile('src/media/created/output.webp', (err) => {
+            if (err) {
+                console.log(err);
+            }else{
+                console.log('Sticker Created');
+                const msg2send = MessageMedia.fromFilePath('src/media/created/output.webp');
+                msg.reply(msg2send, from, {sendMediaAsSticker : true, stickerAuthor : 'wp-bot @Towel15'});
+            }
         });
-        console.log('Sticker Created');
     } catch (error) {
         if(error){
-            console.log(`HA OCURRIDO UN ERROR AL DESCARGAR LA IMAGEN/VIDEO.\nError: ${err}`);
-        }            
+            console.log(`An error was happened during the creation of the sticker.\nError: ${error}`);
+        }
     }
 }
 
-module.exports = {downloadMsgMedia};
+module.exports = {createSticker};
