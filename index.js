@@ -3,6 +3,7 @@ const qrcode = require('qrcode-terminal');
 const messages2send = require('./src/modules/messages/messages2Send.json');
 const {createSticker} = require('./src/modules/stickerCreator/app.js');
 const WAWebJS = require('whatsapp-web.js');
+const command = require('nodemon/lib/config/command');
 
 const client = new Client({
     authStrategy : new LocalAuth()
@@ -34,11 +35,17 @@ client.on('message',(msg)=>{
         console.log(msgReceived);
     }
 
+    
     let msg2send;
-
+    
     let comands = [];
     for(const i in messages2send){
         comands.push(i);
+    }
+
+    if(!isStatus && body.startsWith('!')){
+        console.log('New bot require command received');
+        console.log(comands.filter(`${body}`));
     }
 
     switch(body){
@@ -58,10 +65,6 @@ client.on('message',(msg)=>{
         case '!Sticker':
             if((type === WAWebJS.MessageTypes.IMAGE) || (type === WAWebJS.MessageTypes.VIDEO)){
                 createSticker(msg,from);
-                // .then(()=>{
-                //     // msg2send = MessageMedia.fromFilePath('src/media/created/output.webp');
-                //     // msg.reply(msg2send, from, {sendMediaAsSticker : true, stickerAuthor : 'wp-bot @Towel15'});
-                // })
             }else{
                 msg2send = messages2send['!Sticker'].notSticker;
             }

@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.3",
+    "mysql": "^2.18.1",
     "nodemon": "^2.0.16",
     "qrcode-terminal": "^0.12.0",
     "sharp": "^0.30.3",
