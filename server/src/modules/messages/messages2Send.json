@@ -1,0 +1,37 @@
+{
+    "!Hola Bot":
+    {
+        "body" : "*HOLA KP* Que pio queres."
+    },
+
+    "!Gaspi Bot":
+    {
+        "body" : "BOOOEUNASSS"
+    },
+
+    "!Sticker":
+    {
+        "correct" : "Acá va a convertir a Sticker las imagenes que le envias, pero bueno",
+        "notSticker" : "Se tiene que enviar una imagen o video para poder convertirse a sticker"
+    },
+
+    "!Audio":
+    {
+        "body" : "En un momento será respondido por un agente."
+    },
+
+    "!Hola":
+    {
+        "body" : "Hola :)"
+    },
+
+    "!Proposito":
+    {
+        "body" : "Soy una máquina diseñada para responderte como un crack."
+    },
+
+    "!Qatar":
+    {
+        "body" : "Lgm Paraguay iba a salir campeón si no se lesionaba la rodilla"
+    }
+}

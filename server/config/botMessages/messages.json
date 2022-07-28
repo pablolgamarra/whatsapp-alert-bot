@@ -1,0 +1,34 @@
+[
+    {
+        "messsageReceived": "Hola Bot",
+        "body": "Hola Mundo. Test"
+    },
+    {
+        "messsageReceived": "Hola",
+        "body": "Hola, yo soy un bot que puede ser un asistente para tu empresa u organizacion. Test"
+    },
+    {
+        "messsageReceived": "IG Del Botsito?",
+        "body": "El bot aun no tiene pagina de insta, pero podes escribirle al creador: @pablolgamarra"
+    },
+    {
+        "messsageReceived": "Gaspi",
+        "body": "BOENASSSS"
+    },
+    {
+        "messsageReceived": "Mas plata...",
+        "body": "Mas Gasto"
+    },
+    {
+        "messsageReceived": "Son las 3 de la mañana",
+        "body": "Y yo ni se como tu te llamas"
+    },
+    {
+        "messsageReceived": "Tu no eres mi pana",
+        "body": "Ni mi amigo, ni mi socio"
+    },
+    {
+        "messsageReceived": "Givenchy",
+        "body": "Tengo a los mios hablando italiano, de lunes a viernes solo comen pasta"
+    }
+]
