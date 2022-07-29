@@ -1,7 +1,7 @@
 [
     {
         "messsageReceived": "Hola Bot",
-        "body": "Hola Mundo. Test"
+        "body": "Test"
     },
     {
         "messsageReceived": "Hola",
@@ -24,8 +24,8 @@
         "body": "Y yo ni se como tu te llamas"
     },
     {
-        "messsageReceived": "Tu no eres mi pana",
-        "body": "Ni mi amigo, ni mi socio"
+        "messsageReceived": "Tu no eres mi amigo",
+        "body": "Ni mi pana, ni mi socio"
     },
     {
         "messsageReceived": "Givenchy",

@@ -1,6 +1,4 @@
 const qrcode = require('qrcode-terminal');
-const messages2send = require('../src/modules/messages/messages2Send.json');
-const { createSticker } = require('../src/modules/stickerCreator/app.js');
 const WAWebJS = require('whatsapp-web.js');
 const client = require('./client');
 const messages = require('./message');
@@ -19,81 +17,23 @@ Client.on('authenticated', () => {
     console.log('Client Authenticated');
 })
 
-Client.on('message', (msg) => {
+Client.on('message', msg => {
     const { from, to, body, isStatus, type } = msg;
 
-    const msgReceived = {
-        "From": from,
-        "To": to,
-        "Message": body
-    }
+    const msgReceived = `
+        "From": ${from},
+        "To": ${to},
+        "Message": ${body}
+    `
 
-    if (!isStatus) {
-        console.log('New Message Received.');
+    if (isStatus) {
+        console.log('New Status Received');
+    } else if (body.startsWith('!')) {
         console.log(msgReceived);
-    }
-
-
-    let msg2send;
-
-    let comands = [];
-    for (const i in messages2send) {
-        comands.push(i);
-    }
-
-    if (!isStatus && body.startsWith('!')) {
-        console.log('New bot require command received');
-        console.log(comands.filter(`${body}`));
-    }
-
-    switch (body) {
-        case '!Hola Bot':
-            msg2send = messages2send['!Hola'].body;
-            msg.reply(msg2send);
-
-            msg2send = `Los Comandos Disponibles son:\n ${comands.join("\n")}`;
-            msg.reply(msg2send);
-            console.log('Bot Command Responsed');
-            break;
-        case '!Gaspi Bot':
-            msg2send = messages2send['!Gaspi Bot'].body;
-            msg.reply(msg2send);
-            console.log('Bot Command Responsed');
-            break;
-        case '!Sticker':
-            if ((type === WAWebJS.MessageTypes.IMAGE) || (type === WAWebJS.MessageTypes.VIDEO)) {
-                createSticker(msg, from);
-            } else {
-                msg2send = messages2send['!Sticker'].notSticker;
-            }
-            console.log('Bot Command Responsed');
-            break;
-        case '!Audio':
-            msg2send = messages2send['!Audio'].body;
-            msg.reply(msg2send);
-            console.log('Bot Command Responsed');
-            break;
-        case '!Hola':
-            msg2send = messages2send['!Hola'].body;
-            msg.reply(msg2send);
-            console.log('Bot Command Responsed');
-            break;
-        case '!Proposito':
-            msg2send = messages2send['!Proposito'].body;
-            msg.reply(msg2send);
-            console.log('Bot Command Responsed');
-            break;
-        case '!Qatar':
-            msg2send = messages2send['!Qatar'].body;
-            msg.reply(msg2send);
-            console.log('Bot Command Responsed');
-            break;
-        case '!Comandos':
-            msg2send = `Los Comandos Disponibles son:\n ${comands.join("\n")}`;
-            msg.reply(msg2send);
-            console.log('Bot Command Responsed');
-            break;
+        messages.sendMessage(msg, messages.getMessage(body).slice(1));
     }
 });
 
-Client.initialize(); 
+Client.initialize();
+
+module.exports = { Client }

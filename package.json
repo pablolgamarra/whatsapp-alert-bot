@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "run": "nodemon index.js",
-    "test": "test"
+    "test": "jest"
   },
   "author": "Towel",
   "license": "ISC",
@@ -20,5 +20,8 @@
   },
   "dev-dependencies": {
     "nodemon": "^2.0.15"
+  },
+  "devDependencies": {
+    "jest": "^28.1.3"
   }
 }

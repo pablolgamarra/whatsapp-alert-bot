@@ -1,7 +1,12 @@
-const messages = require('../config/botMessages/messages.json')
+const messages = require('../config/botMessages/messages.json');
 
 module.exports = {
-    getMessage: (index) => {
-        return messages[index].body
+    getMessage: (msgReceived) => {
+        return messages.find(msg => msg.messsageReceived == msgReceived).body;
+    },
+
+    sendMessage: (msgReceived, msgBody) => {
+        msgReceived.reply(msgBody);
+        return `Message Responsed: ${msgBody}`;
     }
 }
