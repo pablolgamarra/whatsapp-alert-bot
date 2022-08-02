@@ -1,4 +1,5 @@
 const qrcode = require('qrcode-terminal');
+const { MessageTypes } = require('whatsapp-web.js');
 const WAWebJS = require('whatsapp-web.js');
 const client = require('./client');
 const messages = require('./message');
@@ -18,22 +19,38 @@ Client.on('authenticated', () => {
 })
 
 Client.on('message', msg => {
-    const { from, to, body, isStatus, type } = msg;
+    const { from, to, body, isStatus, type, timestamp } = msg;
 
     const msgReceived = `
-        "From": ${from},
-        "To": ${to},
-        "Message": ${body}
+        "From": ${from} --- "To": ${to} --- "Message": ${body} --- ${new Date(timestamp * 1000)}
     `
+    switch (type) {
+        case MessageTypes.AUDIO || MessageTypes.VOICE:
+            console.log(`Audio Received\n${msgReceived}`);
+            break;
 
-    if (isStatus) {
-        console.log('New Status Received');
-    } else if (body.startsWith('!')) {
-        console.log(msgReceived);
-        messages.sendMessage(msg, messages.getMessage(body).slice(1));
+        case MessageTypes.IMAGE || MessageTypes.VIDEO:
+            if (isStatus) {
+                console.log('New Status Received');
+            } else if (body == '!Sticker') {
+                console.log(`Media Received\n${msgReceived}`);
+                messages.sendSticker(msg);
+            }
+            break;
+
+        case MessageTypes.TEXT:
+            if (isStatus) {
+                console.log('New Status Received');
+            } else if (body.startsWith('!')) {
+                console.log(msgReceived);
+                messages.sendMessage(msg, messages.getMessage(body.slice(1)));
+            }
+            break;
+
+        default:
+            console.log(msgReceived);
+            break;
     }
 });
-
-Client.initialize();
 
 module.exports = { Client }

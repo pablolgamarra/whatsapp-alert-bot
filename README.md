@@ -1,11 +1,31 @@
-# node_bot_for_whatsapp
+# NODE Bot For Whatsapp
 
-> **IN DEVELOPMENT**
+## Current Functions
+- Auto-Response with Predefined Messages
+- Create Stickers from Media sended by users
 
-## **Expected FUNCTIONS**
-1. Auto-Response to predefined messages
-1. Tag the chats with the WA-Business tag function to let the user sort the chats
-1. Allow the users to send images or videos and create whatsapp stickers with them
+## How To Use
 
->ADDED STICKER CREATION FUNCTION
-The users can send a photo and the bot will response they with a .webp file sended as Whatsapp Sticker.
+**Version 0.2**
+
+Clone the source files
+
+
+```bash
+git clone https://github.com/pablolgamarra/node_bot_for_whatsapp.git    
+```
+
+Execute "npm run start"
+
+```bash
+npm run start
+```
+
+This will be run an instance of the WA-WEB Client. All you need to do it's scan the QR generated for.
+
+This bot it's helpfull to business that have to response to repetitive messages everytime, with the "botMessages.json", you can build your own responses to the messages.
+
+## In Process
+
+- Creation of Video Stickers
+- Login / Signup with a web page, to make the app more user-friendly

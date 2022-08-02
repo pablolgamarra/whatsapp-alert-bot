@@ -4,7 +4,8 @@
   "description": "A basic bot that response the messages at whatsapp",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "dev": "node server/bin/bot/index.js",
+    "start": "node app.js",
     "run": "nodemon index.js",
     "test": "jest"
   },
@@ -17,7 +18,7 @@
     "nodemon": "^2.0.16",
     "qrcode-terminal": "^0.12.0",
     "sharp": "^0.30.3",
-    "whatsapp-web.js": "^1.16.6"
+    "whatsapp-web.js": "^1.17.1"
   },
   "dev-dependencies": {
     "nodemon": "^2.0.15"
