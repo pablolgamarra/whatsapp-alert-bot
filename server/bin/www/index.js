@@ -1,5 +1,8 @@
-const app = require('server / app.js');
+const app = require('../../app');
+require('dotenv').config({ path: 'server/config/server.env' });
 
-app.listen(3000, () => {
-    console.log('Serving on Port 3000');
-})
+app.set('port', process.env.SERVER_PORT || 3000);
+
+app.listen(app.get('port'), () => {
+    console.log(`Serving on Port ${app.get('port')}`);
+});

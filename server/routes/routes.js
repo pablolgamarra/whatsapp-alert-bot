@@ -1,25 +1,31 @@
 const express = require('express');
+const userdb = require('../data/user.data');
 
-const router = express.Router();
+const Router = express.Router();
 
-router.get('/', (req, res) => {
+Router.get('/api/users', async (req, res) => {
     //Codigo que va a enviar la pagina de inicio / bienvenida
-    console.log(`Method: ${req.method} -- Time: ${new Time()}`);
+    console.log(`New Request -- Method: ${req.method} -- Time: ${Date.now()}`);
+    const users = await userdb.getUsers();
+    console.log(`Response: ${users}`);
+    res.json(users);
 })
 
-router.get('/login', (req, res) => {
+Router.get('/login', (req, res) => {
     //Codigo que va a enviar el formulario de inicio de sesion
-    console.log(`Method: ${req.method} -- Time: ${new Time()}`);
+    console.log(`Method: ${req.method} -- Time: ${Date.now()}`);
 })
 
-router.post('/', (req, res) => {
-    console.log(`Method: ${req.method} -- Time: ${new Time()}`);
+Router.post('/', (req, res) => {
+    console.log(`Method: ${req.method} -- Time: ${Date.now()}`);
 })
 
-router.get('/', (req, res) => {
-    console.log(`Method: ${req.method} -- Time: ${new Time()}`);
+Router.get('/', (req, res) => {
+    console.log(`Method: ${req.method} -- Time: ${Date.now()}`);
 })
 
-router.get('/', (req, res) => {
-    console.log(`Method: ${req.method} -- Time: ${new Time()}`);
+Router.get('/', (req, res) => {
+    console.log(`Method: ${req.method} -- Time: ${Date.now()}`);
 })
+
+module.exports = Router

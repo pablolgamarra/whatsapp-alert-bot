@@ -1,12 +1,11 @@
 {
   "name": "node_bot_for_whatsapp",
   "version": "0.0.2",
-  "description": "A basic bot that response the messages at whatsapp",
+  "description": "Bot For Whatsapp to Auto-Response to Messages, Create Stickers and other functions",
   "main": "index.js",
   "scripts": {
     "dev": "node server/bin/bot/index.js",
-    "start": "node app.js",
-    "run": "nodemon index.js",
+    "server": "node server/bin/www/index.js",
     "test": "jest"
   },
   "author": "Towel",
@@ -14,7 +13,7 @@
   "dependencies": {
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
     "nodemon": "^2.0.16",
     "qrcode-terminal": "^0.12.0",
     "sharp": "^0.30.3",

@@ -1,23 +1,15 @@
-const db = require('./connectdb.data');
+const db = require('./connect.data');
 
 module.exports = {
-    getUsers: ()=>{
-        db.query('select * from users', (err, result) =>{
-            if(err){
-                console.log(err);
-            }else{
-                const users = result;
-                return users;
-            }
-        })
+    getUsers: async () => {
+        return [rows, fields] = await db.execute('select * from users')
     },
-    getUserById: (id)=>{
-        db.query(`select * from users where id = id`, (err, result) =>{
-            if(err){
+    getUserById: async (id) => {
+        db.query(`select * from users where id = id`, (err, result) => {
+            if (err) {
                 console.log(err);
-            }else{
-                const users = result;
-                return users;
+            } else {
+                return result;
             }
         })
     }

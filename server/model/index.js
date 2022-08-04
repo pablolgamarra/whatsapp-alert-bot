@@ -26,14 +26,14 @@ Client.on('message', msg => {
     `
     switch (type) {
         case MessageTypes.AUDIO || MessageTypes.VOICE:
-            console.log(`Audio Received\n${msgReceived}`);
+            console.log(`Audio Received\n"From": ${from} --- "To": ${to} --- ${new Date(timestamp * 1000)}`);
             break;
 
         case MessageTypes.IMAGE || MessageTypes.VIDEO:
             if (isStatus) {
                 console.log('New Status Received');
             } else if (body == '!Sticker') {
-                console.log(`Media Received\n${msgReceived}`);
+                console.log(`Media Received\n"From": ${from} --- "To": ${to} --- ${new Date(timestamp * 1000)}`);
                 messages.sendSticker(msg);
             }
             break;
