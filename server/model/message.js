@@ -1,5 +1,8 @@
 const messages = require('../config/botMessages/messages.json');
 const stickerCreator = require('../util/stickerCreator/stickers');
+const pdfParser = require('../util/pdfParser/parser');
+const numberFormatter = require('../util/numberFormatter/formatter');
+const { MessageMedia } = require('whatsapp-web.js');
 
 module.exports = {
     getMessage: (msgReceived) => {
@@ -14,5 +17,11 @@ module.exports = {
     sendSticker: (msgReceived) => {
         stickerCreator.createSticker(msgReceived, msgReceived.from);
         return `Message Responsed With Sticker Created`;
+    },
+
+    sendPDF: (Client, number, filePath) => {
+        const data = pdfParser.parser(filePath);
+        const message = new MessageMedia('application/pdf', data, 'Factura');
+        Client.sendMessage(number, numberFormatter.formatter(number), pdfParser('TEST.pdf'));
     }
 }

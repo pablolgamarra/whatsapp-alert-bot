@@ -46,7 +46,6 @@ Client.on('message', msg => {
                 messages.sendMessage(msg, messages.getMessage(body.slice(1)));
             }
             break;
-
         default:
             console.log(msgReceived);
             break;
