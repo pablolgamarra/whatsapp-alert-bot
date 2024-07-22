@@ -2,8 +2,8 @@ const qrSaver = require('../util/qrSaver/qrSaver.js');
 const qrcode = require('qrcode-terminal');
 const { MessageTypes } = require('whatsapp-web.js');
 const WAWebJS = require('whatsapp-web.js');
-const client = require('./client');
-const messages = require('./message');
+const client = require('./client.js');
+const messages = require('./message.js');
 
 const Client = client.getWAClient();
 
