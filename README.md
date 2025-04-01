@@ -1,31 +1,60 @@
-# NODE Bot For Whatsapp
+# Node Bot For Whatsapp - Project Overview
 
-## Current Functions
-- Auto-Response with Predefined Messages
-- Create Stickers from Media sended by users
+## Description
 
-## How To Use
+This project is a modular and scalable WhatsApp bot built using `whatsapp-web.js`. The bot connects to WhatsApp via a QR code and provides functionality for handling messages and other interactions. The project is structured to allow easy expansion, including API integration and front-end development.
 
-**Version 0.2**
+## Project Structure
 
-Clone the source files
-
-
-```bash
-git clone https://github.com/pablolgamarra/node_bot_for_whatsapp.git    
+```
+/node_wp_bot
+-/front             # UI (currently on hold, future integration planned)
+-/server            # Server handling the bot and future APIs
+  --/bot            # Core WhatsApp bot logic
+    ---/wp-client   # WhatsApp client module
+      ---- getWpClient.js   # Initializes the WhatsApp client
+    ---/handlers    # Event and action handlers
+      ---- messageHandler.js  # Handles incoming messages
+      ---- qrHandler.js       # Manages QR codes for authentication
+    ---index.js    # Main bot configuration
 ```
 
-Execute "npm run start"
+## Features
 
-```bash
-npm run start
+-   **WhatsApp Web Connection**: Uses `whatsapp-web.js` to connect via QR code.
+-   **QR Code Handling**: Generates and displays QR codes for authentication.
+-   **Message Handling**: Responds to incoming messages with predefined logic.
+-   **Modular Design**: Event handlers are separated into dedicated files for easy maintenance and scalability.
+-   **API Integration (Optional)**: A REST API can be added for external interaction with the bot.
+
+## Current Handlers
+
+### QR Handler (`qrHandler.js`)
+
+```javascript
+import qrCode from 'qrcode-terminal';
+
+export function handleQr(qr) {
+	console.log('QR Code Received');
+	qrCode.generate(qr, { small: true });
+}
 ```
 
-This will be run an instance of the WA-WEB Client. All you need to do it's scan the QR generated for.
+### Message Handler (`messageHandler.js`)
 
-This bot it's helpfull to business that have to response to repetitive messages everytime, with the "botMessages.json", you can build your own responses to the messages.
+```javascript
+export function handleMessage(msg) {
+	console.log(`Message received: ${msg.body}`);
+	if (msg.body.toLowerCase() === 'hello') {
+		msg.reply('Hello! How can I assist you?');
+	}
+}
+```
 
-## In Process
+## Next Steps
 
-- Creation of Video Stickers
-- Login / Signup with a web page, to make the app more user-friendly
+1. **Expand Message Handling**: Add more advanced responses, commands, and automation.
+2. **Develop a REST API**: Create an Express API to allow external applications to send messages.
+3. **Build a UI (Optional)**: Integrate a front-end interface for bot management.
+
+This structure ensures flexibility for future improvements while maintaining clean and organized code. 🚀
