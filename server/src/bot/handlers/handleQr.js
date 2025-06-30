@@ -1,6 +1,6 @@
-import qrCode from 'qrcode-terminal';
+import { setQR } from '../../store/qr.js';
 
 export function handleQr(qr) {
 	console.log('QR Recibido');
-	qrCode.generate(qr, { small: true });
+	setQR(qr);
 }
