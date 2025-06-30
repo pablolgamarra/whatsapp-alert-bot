@@ -1,9 +1,11 @@
 export function handleMessage(msg) {
 	const { from, to, body, isStatus, type, timestamp } = msg;
 
-	const msgReceived = `
-            "From": ${from} --- "To": ${to} --- "Message": ${body} --- ${new Date(timestamp * 1000)}
-        `;
+	const msgReceived = {
+		From: from,
+		To: to,
+		Message: body,
+	};
 
 	console.log('Message Received', msgReceived);
 
