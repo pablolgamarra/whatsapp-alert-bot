@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+    whatsapp-bot:
+        build: .
+        container_name: whatsapp-bot
+        ports:
+            - '2025:3000'
+        restart: unless-stopped
+        volumes:
+            - ./session:/app/session # si querés persistir sesión de WhatsApp
+        networks:
+            - bot-net
+
+networks:
+    bot-net:
+        external: true # o false si querés que docker-compose la cree
