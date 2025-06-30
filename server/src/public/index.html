@@ -8,5 +8,53 @@
 		/>
 		<title>Node Bot For Whatsapp</title>
 	</head>
-	<body></body>
+	<body class="bg-light">
+		<div class="container py-5 text-center">
+			<h1 class="mb-4">Escanea el código QR</h1>
+
+			<div
+				id="qr-container"
+				class="mb-4"
+			>
+				<div
+					class="spinner-border text-primary"
+					role="status"
+				>
+					<span class="visually-hidden">Cargando...</span>
+				</div>
+			</div>
+
+			<button
+				class="btn btn-secondary"
+			>
+                <a href="/messages">
+                    Configurar Mensajes del Bot
+                </a>
+			</button>
+		</div>
+
+		<script>
+			async function cargarQR() {
+				try {
+					const res = await fetch('/api/qr');
+					const data = await res.json();
+					const contenedor = document.getElementById('qr-container');
+
+					if (data.qr) {
+						contenedor.innerHTML = `
+                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
+						data.qr,
+					)}" class="img-fluid" alt="Código QR" />
+                `;
+					} else {
+						contenedor.innerHTML = '<p>No hay QR disponible aún. Esperando...</p>';
+					}
+				} catch (err) {
+					document.getElementById('qr-container').innerHTML = '<p>Error al cargar el QR.</p>';
+				}
+			}
+
+			cargarQR();
+		</script>
+	</body>
 </html>
