@@ -24,20 +24,21 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Crear app directory
+# Establecer el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar archivos
-COPY package*.json ./
-COPY . .
+# Copiar los package.json desde subcarpeta server
+COPY server/package*.json ./server/
 
-CMD ["cd", "server"]
-
-# Instalar dependencias
+# Entrar a la carpeta y correr npm install
+WORKDIR /app/server
 RUN npm install
 
-# Expone el puerto del servidor Express
+# Copiar el resto del código
+COPY server ./
+
+# Exponer puerto del servidor web
 EXPOSE 3000
 
-# Comando por defecto: inicia el servidor y luego el bot
-CMD ["node", "./bin/web/start.js"]
+# Comando para iniciar el bot y el servidor
+CMD ["node", "./bin/main/main.js"]
