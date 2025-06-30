@@ -7,7 +7,7 @@
 		"bot": "node ./bin/bot/index.js",
 		"dev": "node ./bin/bot/index.js",
 		"server": "node ./bin/web/index.js",
-		"start": "node ./bin/main/index.js",
+		"start": "node ./bin/main/main.js",
 		"test": "jest"
 	},
 	"author": "PG Tech",

@@ -1,3 +1,5 @@
 import bot from '../../src/bot/index.js';
 
-bot.initialize();
+const initializedBot = bot.initialize();
+
+export default initializedBot;

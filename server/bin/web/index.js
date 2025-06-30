@@ -1,4 +1,4 @@
-import app from 'src/web/index.js';
+import app from '../../src/web/index.js';
 
 app.listen(3000, (error) => {
 	if (error) {
