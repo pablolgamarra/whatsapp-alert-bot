@@ -31,6 +31,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY . .
 
+CMD ["cd", "server"]
+
 # Instalar dependencias
 RUN npm install
 
