@@ -27,19 +27,20 @@ RUN apt-get update && apt-get install -y \
 # Establecer el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
+# Copiar los package.json desde subcarpeta server
+COPY server/package*.json ./server/
+
+# Copiar el resto del código
+COPY server ./
+
 RUN useradd -m nodebot
 
 RUN chown -R nodebot:nodebot /app
 
-# Copiar los package.json desde subcarpeta server
-COPY server/package*.json ./server/
-
 # Entrar a la carpeta y correr npm install
 WORKDIR /app/server
-RUN npm install
 
-# Copiar el resto del código
-COPY server ./
+RUN npm install
 
 USER nodebot
 
