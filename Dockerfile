@@ -27,6 +27,10 @@ RUN apt-get update && apt-get install -y \
 # Establecer el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
+RUN useradd -m nodebot
+
+RUN chown -R nodebot:nodebot /app
+
 # Copiar los package.json desde subcarpeta server
 COPY server/package*.json ./server/
 
@@ -36,6 +40,8 @@ RUN npm install
 
 # Copiar el resto del código
 COPY server ./
+
+USER nodebot
 
 # Exponer puerto del servidor web
 EXPOSE 3000
