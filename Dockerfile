@@ -47,5 +47,7 @@ USER nodebot
 # Exponer puerto del servidor web
 EXPOSE 3000
 
+WORKDIR /app
+
 # Comando para iniciar el bot y el servidor
-CMD ["node", "./bin/main/main.js"]
+CMD ["npm", "run start"]
