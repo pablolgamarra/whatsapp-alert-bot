@@ -39,15 +39,13 @@ RUN chown -R nodebot:nodebot /app
 
 # Entrar a la carpeta y correr npm install
 WORKDIR /app/server
-
 RUN npm install
 
+# Cambiar a usuario no root
 USER nodebot
 
 # Exponer puerto del servidor web
 EXPOSE 3000
 
-WORKDIR /app
-
 # Comando para iniciar el bot y el servidor
-CMD ["npm", "run start"]
+CMD ["node", "./bin/main/main.js"]
