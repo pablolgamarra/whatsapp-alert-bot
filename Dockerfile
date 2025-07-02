@@ -31,7 +31,7 @@ WORKDIR /app
 COPY server/package*.json ./server/
 
 # Copiar el resto del código
-COPY server ./
+COPY . .
 
 RUN useradd -m nodebot
 
