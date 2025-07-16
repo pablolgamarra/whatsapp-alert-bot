@@ -6,31 +6,209 @@
 			name="viewport"
 			content="width=device-width, initial-scale=1.0"
 		/>
-		<title>Configurar mensajes</title>
+        <link rel="stylesheet" href="./styles/mvp.css">
+		<title>Whatsapp Alerts Bot | Settings</title>
 	</head>
 	<body>
-		<h1>Configurar mensajes del bot</h1>
-		<h2>Mensajes Actuales</h2>
-        <div id="msg-list"><div>
-		<script>
-			async function cargarMensajes() {
-				try {
-					const res = await fetch('/api/messages');
-					const messages = (await res.json()).messages;
-                    console.log(messages)
-                    const listParentElement = document.getElementById('msg-list')
-					
-                    for(message of messages){
-                        const listItem = document.createTextNode(`<div>${message.body}<div>`)
+        <header>
+            <nav>
+				<a href="/"><img src="./icons/bot-icon.svg" alt="Bot Icon" height="80" width="80"></img></a>
+				<ul>
+					<li><a href="/">Home</a></li>
+					<li>
+						<a href="/settings">Settings</a>
+						<ul>
+							<li><a href="/settings#alert-recipients">Alert Recipients</a></li>
+							<li><a href="/settings#alert-endpoints">Endpoints</a></li>
+						</ul>
+					</li>
+					<li><a href="/#docs">Docs</a></li>
+					<li><a href="https://github.com/pablolgamarra/node_bot_for_whatsapp/tree/webhooks-listener" target="_blank">GitHub ↗</a></li>
+				</ul>
+			</nav>
+            <h1>Whatsapp Alert Bot Settings</h1>
+            <p>In this panel you can configure the used <strong>webhooks</strong> and they associate <strong>alert recipients</strong>.</p>
+        </header>
+        <main>
+            <hr/>
+            <article id="alert-recipients">
+                <h1>Alert Recipients by Endpoint</h1>
+                <ul id="alert-recipients-container"></ul>
+            </article>
+            <hr />
+            <article id="alert-endpoints">
+                <h1>Configured Endpoints</h1>
+                <ul id="alert-endpoints-container"></ul>
+            </article>
+            <hr />
+            <section>
+                <header>
+                    <h2>Register a new endpoint</h2>
+                </header>
+                <form id="new-endpoint-form">
+                    <label for="endpoint">Endpoint:</label>
+                    <input type="text" id="endpoint" name="endpoint" placeholder="ej: zabbix" required />
 
-                        listParentElement.appendChild(listItem)
+                    <label for="alias">Endpoint alias (Name):</label>
+                    <input type="text" id="alias" name="alias" placeholder="ej: Alertas Glymax" required />
+
+                    <fieldset>
+                    <legend>Recipients</legend>
+
+                    <div id="recipients-container">
+                        <div class="recipient-group">
+                        <input type="text" name="recipient-name" placeholder="Recipient Name" required />
+                        <input type="text" name="recipient-chatId" placeholder="Chat ID (example: 12345@g.us)" required />
+                        </div>
+                    </div>
+                    <button type="button" onclick="addRecipient()">Add another recipient +</button>
+                    </fieldset>
+
+                    <br />
+                    <button type="submit">Register Endpoint</button>
+                </form>
+            </section>
+        </main>
+        <footer id="footer">
+			<hr />
+			<p>
+				Check Developer profile
+				<a
+					href="https://github.com/pablolgamarra"
+					target="_blank"
+					>Pablo Gamarra</a
+				>
+			</p>
+		</footer>
+        <script>
+            async function getRecipients() {
+                try {
+                    const recipientsEndpoint = '/api/recipients'
+                    const mountingPoint = document.getElementById('alert-recipients-container')
+
+                    const res = await fetch(recipientsEndpoint);
+                    
+                    const data = (await res.json());
+
+                    for(const element of data){
+                        const nElement = document.createElement('li');
+                        nElement.innerHTML = `<h4>'/webhook/${element.endpoint}' Alerts Recipients</h4>
+                        <table id=${element.endpoint}>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>ChatID</th>
+                                </tr>
+                                <thead>
+                                <tbody>
+                                    ${element.recipients.map((recipient)=> `<tr><td>${recipient.name}</td><td>${recipient.chatId}</td></tr>`)}
+                                </tbody>
+                                </table>`
+
+                        mountingPoint.appendChild(nElement);
                     }
 
-				} catch (e) {
-					console.log('Error listando mensajes', e);
-				}
-			}
-			cargarMensajes();
-		</script>
+                } catch (e) {
+                    console.log('Error when querying message recipients', e);
+                }
+            }
+
+            async function getEndpoints() {
+                try {
+                    const recipientsEndpoint = '/api/endpoints'
+                    const mountingPoint = document.getElementById('alert-endpoints-container')
+
+                    const res = await fetch(recipientsEndpoint);
+                    
+                    const data = (await res.json());
+
+                    for(const element of data){
+                        const nElement = document.createElement('li');
+                        nElement.innerHTML = `<h3>${element.alias}</h3>
+                        <table id=${element.endpoint}>
+                            <thead>
+                                <tr>
+                                    <th>Endpoint</th>
+                                    <th>Alias</th>
+                                </tr>
+                                <thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            /webhook/${element.endpoint}        
+                                        </td>
+                                        <td>
+                                            ${element.alias}        
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                </table>`
+
+                        mountingPoint.appendChild(nElement);
+                    }
+
+                } catch (e) {
+                    console.log('Error when querying message recipients', e);
+                }
+            }
+
+            getRecipients();
+            getEndpoints();
+
+            function addRecipient() {
+                const container = document.getElementById('recipients-container');
+                const group = document.createElement('div');
+                group.classList.add('recipient-group');
+                group.innerHTML = `
+                <input type="text" name="recipient-name" placeholder="Nombre del receptor" required />
+                <input type="text" name="recipient-chatId" placeholder="Chat ID (ej: 12345@g.us)" required />
+                `;
+                container.appendChild(group);
+            }
+
+            document.getElementById('new-endpoint-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const endpoint = document.getElementById('endpoint').value.trim();
+                const alias = document.getElementById('alias').value.trim();
+
+                const recipientGroups = document.querySelectorAll('.recipient-group');
+                const recipients = [];
+
+                for (const group of recipientGroups) {
+                const name = group.querySelector('input[name="recipient-name"]').value.trim();
+                const chatId = group.querySelector('input[name="recipient-chatId"]').value.trim();
+
+                if (name && chatId) {
+                    recipients.push({ name, chatId });
+                }
+                }
+
+                const payload = {
+                webhook_endpoint: endpoint,
+                webhook_alias: alias,
+                recipients
+                };
+
+                try {
+                const res = await fetch('/api/recipients', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    alert('✅ Endpoint guardado correctamente');
+                    location.reload();
+                } else {
+                    const error = await res.json();
+                    alert('❌ Error: ' + error.error);
+                }
+                } catch (err) {
+                console.error('Error al guardar el endpoint', err);
+                alert('❌ Error inesperado');
+                }
+            });
+        </script>
 	</body>
 </html>

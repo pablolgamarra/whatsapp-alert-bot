@@ -3,7 +3,6 @@ import fs from 'node:fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import sendMessage from '../bot/handlers/sendMessage.js';
 import { getQR } from '../store/qr.js';
 const Router = express.Router();
 
@@ -19,6 +18,7 @@ Router.use((req, res, next) => {
 //Reconocer JSON's
 Router.use(express.json());
 
+//API ENDPOINTS
 Router.get('/api/qr', (req, res) => {
 	res.json({ qr: getQR() });
 });
@@ -35,20 +35,119 @@ Router.get('/api/messages', (req, res) => {
 	}
 });
 
-Router.post('/webhook/zabbix', (req, res) => {
+Router.get('/api/recipients', (_, res) => {
+	const webhooksConfigFilePath = path.join(__dirname, '../bot/config/webhooks/webhooksConfig.json');
+
+	try {
+		const webhooksConfig = JSON.parse(fs.readFileSync(webhooksConfigFilePath, 'utf8'));
+
+		const allRecipients = webhooksConfig.map((element) => ({
+			endpoint: element.webhook_endpoint,
+			recipients: element.recipients,
+		}));
+
+		return res.status(200).json(allRecipients);
+	} catch (e) {
+		console.log(e);
+		return res.status(500).json({ error: `Configuration file not found` });
+	}
+});
+
+Router.get('/api/endpoints', (_, res) => {
+	const webhooksConfigFilePath = path.join(__dirname, '../bot/config/webhooks/webhooksConfig.json');
+
+	try {
+		const webhooksConfig = JSON.parse(fs.readFileSync(webhooksConfigFilePath, 'utf8'));
+
+		const allEndpoints = webhooksConfig.map((element) => ({
+			endpoint: element.webhook_endpoint,
+			alias: element.webhook_alias,
+		}));
+
+		return res.status(200).json(allEndpoints);
+	} catch (e) {
+		console.log(e);
+		return res.status(500).json({ error: `Configuration file not found` });
+	}
+});
+
+Router.post('/api/recipients', (req, res) => {
+	const newWebhook = req.body;
+
+	if (!newWebhook?.webhook_endpoint || !newWebhook.recipients) {
+		return res.status(400).json({ error: 'Datos incompletos' });
+	}
+
+	const configPath = path.join(__dirname, '../bot/config/webhookConfig.json');
+
+	try {
+		const currentData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+
+		// Verificar si ya existe
+		const alreadyExists = currentData.find((w) => w.webhook_endpoint === newWebhook.webhook_endpoint);
+		if (alreadyExists) {
+			return res.status(409).json({ error: 'Este endpoint ya existe' });
+		}
+
+		// Agregar y guardar
+		currentData.push({
+			webhook_endpoint: newWebhook.webhook_endpoint,
+			webhook_alias: newWebhook.webhook_alias,
+			recipients: newWebhook.recipients,
+		});
+
+		fs.writeFileSync(configPath, JSON.stringify(currentData, null, 2), 'utf8');
+
+		res.status(200).json({ status: 'Guardado exitosamente' });
+	} catch (err) {
+		console.error('Error al guardar receptor', err);
+		res.status(500).json({ error: 'No se pudo guardar el receptor' });
+	}
+});
+
+//WEBHOOKS ENDPOINTS
+Router.post('/webhook/:source', async (req, res) => {
+	const { source } = req.params;
+
 	const data = req.body;
 
-	console.log('Webhook llamado -> ', data);
+	//Return error if required params are undefined
+	if (!source) {
+		return res.status(400).json({ error: 'Endpoint not configured' });
+	}
 
 	if (!data.message) {
-		return res.status(400).json({ error: 'Parámetros requeridos: to y message' });
+		return res.status(400).json({ error: 'The message parameter is required' });
 	}
+
+	const webhooksConfigFilePath = path.join(__dirname, '../bot/config/webhooks/webhooksConfig.json');
+	let config;
+
 	try {
-		sendMessage(data.message);
-		res.status(200).json({ status: 'enviado' });
+		config = JSON.parse(fs.readFileSync(webhooksConfigFilePath, 'utf8'));
+	} catch (e) {
+		return res.status(500).json({ error: `Webhook configuration not found for: ${source}` });
+	}
+
+	const webhook = config.find((obj) => obj.webhook_endpoint === source);
+	if (!webhook) {
+		return res.status(500).json({ error: `Webhook configuration not found for: ${source}` });
+	}
+
+	const alertRecipients = webhook.recipients;
+	if (!alertRecipients || !Array.isArray(alertRecipients) || alertRecipients.length === 0) {
+		return res.status(404).json({ error: `Recipients for ${source} not configured` });
+	}
+
+	try {
+		for (const recipient of alertRecipients) {
+			console.log(recipient.chatId);
+			// await sendMessage(recipient, data.message);
+		}
+		res.status(200).json({ status: 'Message sent to all recipients' });
 	} catch (err) {
-		console.error('❌ Error al enviar mensaje:', err);
-		res.status(500).json({ error: 'No se pudo enviar el mensaje' });
+		console.error('❌ Error sending message:', err);
+		res.status(500).json({ error: 'Error sending message' });
 	}
 });
 
