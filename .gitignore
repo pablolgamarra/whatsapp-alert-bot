@@ -4,3 +4,7 @@ node_modules
 QRCode.txt
 .wwebjs_cache
 package-lock.json
+
+
+#Configuration files
+/server/src/bot/config/webhooks/webhooksConfig.json
