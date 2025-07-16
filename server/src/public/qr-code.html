@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<link
+			rel="stylesheet"
+			href="./styles/mvp.css"
+		/>
+		<title>Whatsapp Alerts Bot | QR</title>
+	</head>
+	<body>
+		<main>
+			<section id="qr-container-section">
+				<header id="qr-container">
+					<h2>QR CODE</h2>
+				</header>
+			</section>
+		</main>
+		<footer id="footer">
+			<hr />
+			<p>
+				Check creator profile
+				<a
+					href="https://github.com/pablolgamarra"
+					target="_blank"
+					>Pablo Gamarra</a
+				>
+			</p>
+		</footer>
+		<script>
+			async function loadQRCode() {
+				//TODO: Add a whatsapp client js check, if is not initialized. Throw an error
+				try {
+					const res = await fetch('/api/qr');
+					const data = await res.json();
+					const qrContainer = document.getElementById('qr-container');
+
+					if (data.qr) {
+						qrContainer.innerHTML = `
+                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
+						data.qr,
+					)}" alt="Código QR" />
+                `;
+					} else {
+						qrContainer.innerHTML = `<h2>There is no QR Code generated yet.</h2>
+                        <p>Waiting...</p>`;
+					}
+				} catch (err) {
+					document.getElementById('qr-container').innerHTML = '<p>Error loading QR. Try re-loading page</p>';
+				}
+			}
+
+			loadQRCode();
+		</script>
+	</body>
+</html>

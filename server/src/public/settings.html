@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<title>Configurar mensajes</title>
+	</head>
+	<body>
+		<h1>Configurar mensajes del bot</h1>
+		<h2>Mensajes Actuales</h2>
+        <div id="msg-list"><div>
+		<script>
+			async function cargarMensajes() {
+				try {
+					const res = await fetch('/api/messages');
+					const messages = (await res.json()).messages;
+                    console.log(messages)
+                    const listParentElement = document.getElementById('msg-list')
+					
+                    for(message of messages){
+                        const listItem = document.createTextNode(`<div>${message.body}<div>`)
+
+                        listParentElement.appendChild(listItem)
+                    }
+
+				} catch (e) {
+					console.log('Error listando mensajes', e);
+				}
+			}
+			cargarMensajes();
+		</script>
+	</body>
+</html>
