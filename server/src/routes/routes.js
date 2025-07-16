@@ -57,8 +57,12 @@ Router.get('/', (req, res) => {
 	res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-Router.get('/messages', (req, res) => {
-	res.sendFile(path.join(__dirname, '../public/messages.html'));
+Router.get('/qr-code', (req, res) => {
+	res.sendFile(path.join(__dirname, '../public/qr-code.html'));
+});
+
+Router.get('/settings', (req, res) => {
+	res.sendFile(path.join(__dirname, '../public/settings.html'));
 });
 
 export default Router;

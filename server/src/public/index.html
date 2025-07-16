@@ -6,55 +6,48 @@
 			name="viewport"
 			content="width=device-width, initial-scale=1.0"
 		/>
-		<title>Node Bot For Whatsapp</title>
+		<link
+			rel="stylesheet"
+			href="/styles/mvp.css"
+		/>
+		<title>Whatsapp Alerts Bot</title>
 	</head>
-	<body class="bg-light">
-		<div class="container py-5 text-center">
-			<h1 class="mb-4">Escanea el código QR</h1>
-
-			<div
-				id="qr-container"
-				class="mb-4"
-			>
-				<div
-					class="spinner-border text-primary"
-					role="status"
+	<body>
+		<header>
+			<nav>
+				<a href="/"> </a>
+				<ul>
+					<li><a>Home</a></li>
+					<li>
+						<a href="/settings">Settings</a>
+						<ul>
+							<li><a href="/settings#alert-recipients">Alert Recipients</a></li>
+							<li><a href="/settings#endpoints">Endpoints</a></li>
+						</ul>
+					</li>
+					<li><a href="#docs">Docs</a></li>
+					<li><a href="https://github.com/pablolgamarra/node_bot_for_whatsapp/tree/webhooks-listener" target="_blank">GitHub ↗</a></li>
+				</ul>
+			</nav>
+			<h1>Alerts on Whatsapp easier than ever</h1>
+            <p>Send messages to your team when problems arise</p>
+			<a href="/qr-code"><b>Get QR Code</b></a>
+			<a><i>Bot Settings →</i></a>
+		</header>
+		<main>
+            <article id="docs">
+            <article>
+        </main>
+		<footer id="footer">
+			<hr />
+			<p>
+				Check Developer profile
+				<a
+					href="https://github.com/pablolgamarra"
+					target="_blank"
+					>Pablo Gamarra</a
 				>
-					<span class="visually-hidden">Cargando...</span>
-				</div>
-			</div>
-
-			<button
-				class="btn btn-secondary"
-			>
-                <a href="/messages">
-                    Configurar Mensajes del Bot
-                </a>
-			</button>
-		</div>
-
-		<script>
-			async function cargarQR() {
-				try {
-					const res = await fetch('/api/qr');
-					const data = await res.json();
-					const contenedor = document.getElementById('qr-container');
-
-					if (data.qr) {
-						contenedor.innerHTML = `
-                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
-						data.qr,
-					)}" class="img-fluid" alt="Código QR" />
-                `;
-					} else {
-						contenedor.innerHTML = '<p>No hay QR disponible aún. Esperando...</p>';
-					}
-				} catch (err) {
-					document.getElementById('qr-container').innerHTML = '<p>Error al cargar el QR.</p>';
-				}
-			}
-
-			cargarQR();
-		</script>
+			</p>
+		</footer>
 	</body>
 </html>

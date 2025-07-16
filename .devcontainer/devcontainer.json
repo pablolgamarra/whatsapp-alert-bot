@@ -2,23 +2,20 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
 {
 	"name": "NodeBot for Whatsapp",
-    "build": {
-    "dockerfile": "Dockerfile",
-    "args": {
-      "VARIANT": "18"
-    }
-  },
-  "customizations": {
-    "vscode": {
-        "extensions": [
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode"
-  ]
-    }
-  },
-  "forwardPorts": [3000, 3001], // abrí puertos según necesites
-  "postCreateCommand": "npm install",
-  "remoteUser": "node"
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": {
+			"VARIANT": "18"
+		}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": ["dbaeumer.vscode-eslint", "esbenp.prettier-vscode"]
+		}
+	},
+	"forwardPorts": [3000, 3001], // abrí puertos según necesites
+	"postCreateCommand": "git config core.autocrlf input && npm install",
+	"remoteUser": "node"
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 
