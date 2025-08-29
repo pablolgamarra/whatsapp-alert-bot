@@ -36,7 +36,7 @@ Router.get('/api/messages', (req, res) => {
 });
 
 Router.get('/api/recipients', (_, res) => {
-	const webhooksConfigFilePath = path.join(__dirname, '../bot/config/webhooks/webhooksConfig.json');
+	const webhooksConfigFilePath = path.join(__dirname, '../bot/config/webhooks/endpoints.json');
 
 	try {
 		const webhooksConfig = JSON.parse(fs.readFileSync(webhooksConfigFilePath, 'utf8'));
@@ -54,7 +54,7 @@ Router.get('/api/recipients', (_, res) => {
 });
 
 Router.get('/api/endpoints', (_, res) => {
-	const webhooksConfigFilePath = path.join(__dirname, '../bot/config/webhooks/webhooksConfig.json');
+	const webhooksConfigFilePath = path.join(__dirname, '../bot/config/webhooks/endpoints.json');
 
 	try {
 		const webhooksConfig = JSON.parse(fs.readFileSync(webhooksConfigFilePath, 'utf8'));
@@ -120,7 +120,7 @@ Router.post('/webhook/:source', async (req, res) => {
 		return res.status(400).json({ error: 'The message parameter is required' });
 	}
 
-	const webhooksConfigFilePath = path.join(__dirname, '../bot/config/webhooks/webhooksConfig.json');
+	const webhooksConfigFilePath = path.join(__dirname, '../bot/config/webhooks/endpoints.json');
 	let config;
 
 	try {
