@@ -2,6 +2,7 @@ import express from 'express';
 import fs from 'node:fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import sendMessage from '../bot/handlers/sendMessage.js';
 
 import { getQR } from '../store/qr.js';
 const Router = express.Router();
@@ -149,8 +150,7 @@ Router.post('/webhook/:source', async (req, res) => {
 
 	try {
 		for (const recipient of alertRecipients) {
-			console.log(recipient.chatId);
-			// await sendMessage(recipient, data.message);
+			await sendMessage(recipient.chatId, data.message);
 		}
 		res.status(200).json({ status: 'Message sent to all recipients' });
 	} catch (err) {
