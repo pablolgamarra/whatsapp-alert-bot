@@ -86,7 +86,7 @@ Router.post('/api/recipients', (req, res) => {
 		return res.status(400).json({ error: 'Datos incompletos' });
 	}
 
-	const configPath = path.join(__dirname, '../bot/config/webhookConfig.json');
+	const configPath = path.join(__dirname, '../bot/config/webhooks/endpoints.json');
 
 	try {
 		const currentData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
