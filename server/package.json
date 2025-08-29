@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"bot": "node ./bin/bot/index.js",
-		"dev": "node ./bin/bot/index.js",
+		"dev": "nodemon ./bin/main/main.js",
 		"server": "node ./bin/web/index.js",
 		"start": "node ./bin/main/main.js",
 		"test": "jest"
