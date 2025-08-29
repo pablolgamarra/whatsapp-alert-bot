@@ -20,7 +20,15 @@ Router.use(express.json());
 
 //API ENDPOINTS
 Router.get('/api/qr', (req, res) => {
-	res.json({ qr: getQR() });
+    const {qr} = getQR();
+
+    res.json({ "qr": qr});
+});
+
+Router.get('/api/qr-count', (req, res) => {
+    const {qrCount} = getQR();
+
+    res.json({ "count": qrCount});
 });
 
 Router.get('/api/messages', (req, res) => {

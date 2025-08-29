@@ -32,29 +32,47 @@
 			</p>
 		</footer>
 		<script>
+            let lastCount = 0
+
 			async function loadQRCode() {
-				//TODO: Add a whatsapp client js check, if is not initialized. Throw an error
 				try {
 					const res = await fetch('/api/qr');
 					const data = await res.json();
 					const qrContainer = document.getElementById('qr-container');
 
-					if (data.qr) {
-						qrContainer.innerHTML = `
-                  <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
-						data.qr,
-					)}" alt="Código QR" />
-                `;
-					} else {
-						qrContainer.innerHTML = `<h2>There is no QR Code generated yet.</h2>
+					if (!data.qr || data.qr === undefined || data.qr.length < 0) {
+                        qrContainer.innerHTML = `<h2>There is no QR Code generated yet.</h2>
                         <p>Waiting...</p>`;
+					} else {
+                        qrContainer.innerHTML = `
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(
+                            data.qr,
+                        )}" alt="Login QR Code" />
+                        `;
 					}
 				} catch (err) {
 					document.getElementById('qr-container').innerHTML = '<p>Error loading QR. Try re-loading page</p>';
 				}
 			}
+            
+            async function checkQRCount (){
+                const data = await fetch('/api/qr-count').then((res) => res.json());
+                const qrContainer = document.getElementById('qr-container');
 
-			loadQRCode();
+                try{
+                    if (data.count !== lastCount) {
+                        lastCount = data.count;
+                        qrContainer.innerHTML = `<h2>New QR Generated!.</h2>
+                            <p>Reloading...</p>`;
+                        loadQRCode();
+                    }
+                } catch (err) {
+                    console.error("Error checking QR Count:", err);
+                }
+            }
+
+            loadQRCode();
+            setInterval(checkQRCount, 10000)
 		</script>
 	</body>
 </html>
