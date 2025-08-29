@@ -1,0 +1,7 @@
+[
+    {
+        "webhook_endpoint": "zabbix",
+        "webhook_alias": "Alertas desde Zabbix",
+        "recipients": [{"name":"Grupo Alertas", "chatId": "1598262829@g.usx"}]
+    }
+]

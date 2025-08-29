@@ -1,10 +1,10 @@
 [
 	{
-		"messsageReceived": "Hola Bot",
-		"body": "Test"
+		"messsageReceived": "!Funciona?",
+		"body": "Si, las respuestas funcionan"
 	},
 	{
-		"messsageReceived": "Asi guau reyyyy",
-		"body": "Test"
+		"messsageReceived": "!Creador",
+		"body": "https://linktr.ee/pablolgamarra"
 	}
 ]
