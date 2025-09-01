@@ -5,13 +5,18 @@ export default async function sendMessage(chatId, message) {
 		throw Error(`Chat ID and Message are required to send a message through the bot`);
 	}
 
-	const sendedMsg = await bot.sendMessage(chatId, message);
+    let logMsg;
 
-	const logMsg = {
-		To: sendedMsg.to,
-		From: sendedMsg.from,
-		Body: sendedMsg.body,
-	};
+    try{
+        const sendedMsg = await bot.sendMessage(chatId, message);
+        logMsg = {
+            To: sendedMsg.to,
+            From: sendedMsg.from,
+            Body: sendedMsg.body,
+        };
+    }catch(e){
+        throw e
+    }
 
-	console.log('Mensaje de Alerta Enviado por WP -> ', logMsg);
+	console.log(`Message sended to Whatsapp. Chat: ${chatId}. Message -> `, logMsg);
 }
