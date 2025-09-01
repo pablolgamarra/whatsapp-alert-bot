@@ -155,7 +155,7 @@ Router.post('/webhook/:source', async (req, res) => {
 		res.status(200).json({ status: 'Message sent to all recipients' });
 	} catch (err) {
 		console.error('❌ Error sending message:', err);
-		res.status(500).json({ error: 'Error sending message' });
+		res.status(500).json({ error: `Error sending message -> ${err}` });
 	}
 });
 
