@@ -1,5 +1,5 @@
 {
-	"name": "node_bot_for_whatsapp",
+	"name": "whatsapp-alert-bot",
 	"version": "0.0.2",
 	"description": "Alerts bot for whatsapp",
 	"main": "index.js",
@@ -12,7 +12,7 @@
 		"server": "node ./bin/web/index.js",
 		"start": "node ./bin/main/main.js"
 	},
-	"author": "PG Tech",
+	"author": "Arandu Tech",
 	"license": "ISC",
 	"dependencies": {
 		"express": "^4.21.2",
