@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import sendMessage from '../bot/handlers/sendMessage.js';
+import { getAllEndpoints } from '../data/dao/endpointsDao.js';
 
 import { getQR } from '../store/qr.js';
 const Router = express.Router();

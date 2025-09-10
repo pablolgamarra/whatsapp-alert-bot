@@ -3,9 +3,9 @@
 	"version": "0.0.2",
 	"description": "Alerts bot for whatsapp",
 	"main": "index.js",
-    "engines": {
-        "node": ">=18.20.8"
-    },
+	"engines": {
+		"node": ">=18.20.8"
+	},
 	"scripts": {
 		"bot": "node ./bin/bot/index.js",
 		"dev": "nodemon ./bin/main/main.js",
@@ -16,6 +16,7 @@
 	"license": "ISC",
 	"dependencies": {
 		"express": "^4.21.2",
+		"sqlite3": "^5.1.7",
 		"whatsapp-web.js": "1.33.1"
 	},
 	"dev-dependencies": {
