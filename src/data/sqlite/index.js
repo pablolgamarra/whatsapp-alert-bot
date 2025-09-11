@@ -1,13 +1,19 @@
-import {Database} from 'sqlite3';
-import initializeDb from '../migrations';
+import sqlite from 'sqlite3';
+import {initializeDb} from '../migrations.js';
 
-const db = new Database('../../../data/persistance', (err)=>{
+const {Database} = sqlite;
+
+const db = new Database('data/persistance/botConfigs.db', (err)=>{
     if(err){
         console.log(`Error opening DB -> ${err}`);
         return null
     }
 });
 
-initializeDb(db);
+try{
+    const dbInitialized = await initializeDb(db);
+}catch(error){
+    throw Error(`DB Initialize error in sqlite index. -> ${error}`);
+}
 
 export default db;
