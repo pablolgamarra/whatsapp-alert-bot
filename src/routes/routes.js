@@ -91,6 +91,16 @@ Router.get('/api/v2/endpoints', async (_, res) => {
 	}
 });
 
+Router.get('/api/v2/recipients', async (_, res) => {
+	try {
+		const allEndpoints = await getAllEndpoints();
+		return res.status(200).json(allEndpoints);
+	} catch (e) {
+		console.log(e);
+		return res.status(500).json({ error: 'Failed to fetch endpoints' });
+	}
+});
+
 Router.post('/api/recipients', (req, res) => {
 	const newWebhook = req.body;
 
