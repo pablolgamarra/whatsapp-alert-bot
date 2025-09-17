@@ -9,6 +9,7 @@
 	"scripts": {
 		"bot": "node ./bin/bot/index.js",
 		"dev": "nodemon ./bin/main/main.js",
+		"devWs": "nodemon ./bin/web/index.js",
 		"server": "node ./bin/web/index.js",
 		"start": "node ./bin/main/main.js"
 	},
