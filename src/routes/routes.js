@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import sendMessage from '../bot/handlers/sendMessage.js';
-import { getAllEndpoints } from '../data/dao/endpointsDao.js';
+import { deleteEndpoint, getEndpoints, getRecipients, insertEndpoint } from '../data/dao/dao.js';
 
 import { getQR } from '../store/qr.js';
 const Router = express.Router();
@@ -81,9 +81,10 @@ Router.get('/api/endpoints', (_, res) => {
 	}
 });
 
+//VERSION 2 GET
 Router.get('/api/v2/endpoints', async (_, res) => {
 	try {
-		const allEndpoints = await getAllEndpoints();
+		const allEndpoints = await getEndpoints();
 		return res.status(200).json(allEndpoints);
 	} catch (e) {
         console.log(e);
@@ -93,11 +94,47 @@ Router.get('/api/v2/endpoints', async (_, res) => {
 
 Router.get('/api/v2/recipients', async (_, res) => {
 	try {
-		const allEndpoints = await getAllEndpoints();
+		const allEndpoints = await getRecipients();
 		return res.status(200).json(allEndpoints);
 	} catch (e) {
 		console.log(e);
-		return res.status(500).json({ error: 'Failed to fetch endpoints' });
+		return res.status(500).json({ error: 'Failed fetching recipients' });
+	}
+});
+
+
+//VERSION 2 SET
+Router.post('/api/v2/endpoints', async (req, res) => {
+	try {
+        const newEndpoint = req.body;
+
+        if (!newEndpoint?.webhook_endpoint || !newEndpoint.recipients) {
+			return res.status(400).json({ error: 'Incomplete body' });
+		}
+
+        const insertedEndpoint = await insertEndpoint(newEndpoint);
+
+		return res.status(201).json(insertedEndpoint);
+	} catch (e) {
+		console.log(e);
+		return res.status(500).json({ error: 'Failed inserting endpoints' });
+	}
+});
+
+Router.delete('/api/v2/endpoints', async (req, res) => {
+	try {
+		const endpointDelete = req.body;
+
+		if (!endpointDelete?.webhook_endpoint || !endpointDelete.recipients) {
+			return res.status(400).json({ error: 'Incomplete body' });
+		}
+        
+		const deletedEndpoint = await deleteEndpoint(endpointDelete);
+
+		return res.status(200).json(deletedEndpoint);
+	} catch (e) {
+		console.log(e);
+		return res.status(500).json({ error: 'Failed inserting endpoints' });
 	}
 });
 
