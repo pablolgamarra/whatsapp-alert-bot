@@ -2,7 +2,6 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import Router from '../routes/routes.js';
-import db from '../data/sqlite/index.js';
 
 const app = express();
 
