@@ -10,7 +10,7 @@ const router = Router();
 router.use(validateJSONReqs);
 
 //v2 Routes
-router.use('/endpoint', endpointRoutes);
+router.use('/endpoints', endpointRoutes);
 router.use('/recipients', recipientRoutes);
 router.use('/qr', qrRoutes);
 
