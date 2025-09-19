@@ -24,26 +24,28 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Crear usuario nodebot
+RUN useradd -m -u 1001 nodebot
+
 # Establecer el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar los package.json desde subcarpeta server
-COPY server/package*.json ./server/
+# Crear directorios para auth y cache
+RUN mkdir -p /app/auth/bot /app/cache/bot && \
+    chown -R nodebot:nodebot /app
 
-# Copiar el resto del código
-COPY . .
+# Copiar package.json
+COPY --chown=nodebot:nodebot package*.json ./
 
-RUN useradd -m nodebot
-
-RUN chown -R nodebot:nodebot /app
-
-# Entrar a la carpeta y correr npm install
-WORKDIR /app/server
+# Instalar dependencias
 RUN npm install
+
+# Copiar el código fuente
+COPY --chown=nodebot:nodebot . .
 
 # Cambiar a usuario no root
 USER nodebot
-
+#
 # Exponer puerto del servidor web
 EXPOSE 3000
 

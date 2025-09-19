@@ -83,7 +83,7 @@
         <script>
             async function getRecipients() {
                 try {
-                    const recipientsEndpoint = '/api/recipients'
+                    const recipientsEndpoint = '/api/v2/recipients'
                     const mountingPoint = document.getElementById('alert-recipients-container')
 
                     const res = await fetch(recipientsEndpoint);
@@ -115,7 +115,7 @@
 
             async function getEndpoints() {
                 try {
-                    const recipientsEndpoint = '/api/endpoints'
+                    const recipientsEndpoint = '/api/v2/endpoints'
                     const mountingPoint = document.getElementById('alert-endpoints-container')
 
                     const res = await fetch(recipientsEndpoint);

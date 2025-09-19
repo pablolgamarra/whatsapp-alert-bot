@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./styles/mvp.css">
+    <title>Whatsapp Alerts Bot | Settings</title>
+    <style>
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .action-buttons button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .edit-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .save-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .cancel-btn {
+            background-color: #757575;
+            color: white;
+        }
+
+        .edit-input {
+            width: 100%;
+            padding: 4px;
+            margin: 2px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .recipient-row {
+            border-bottom: 1px solid #eee;
+            padding: 8px 0;
+        }
+
+        .recipient-actions {
+            text-align: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <a href="/"><img src="./icons/bot-icon.svg" alt="Bot Icon" height="80" width="80"></img></a>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li>
+                    <a href="/settings">Settings</a>
+                    <ul>
+                        <li><a href="/settings#alert-recipients">Alert Recipients</a></li>
+                        <li><a href="/settings#alert-endpoints">Endpoints</a></li>
+                    </ul>
+                </li>
+                <li><a href="/#docs">Docs</a></li>
+                <li><a href="https://github.com/pablolgamarra/node_bot_for_whatsapp/tree/webhooks-listener"
+                        target="_blank">GitHub ↗</a></li>
+            </ul>
+        </nav>
+        <h1>Whatsapp Alert Bot Settings</h1>
+        <p>In this panel you can configure the used <strong>webhooks</strong> and they associate <strong>alert
+                recipients</strong>.</p>
+    </header>
+    <main>
+        <hr />
+        <article id="alert-recipients">
+            <h1>Alert Recipients by Endpoint</h1>
+            <ul id="alert-recipients-container"></ul>
+        </article>
+        <hr />
+        <article id="alert-endpoints">
+            <h1>Configured Endpoints</h1>
+            <ul id="alert-endpoints-container"></ul>
+        </article>
+        <hr />
+        <section>
+            <header>
+                <h2>Register a new endpoint</h2>
+            </header>
+            <form id="new-endpoint-form">
+                <label for="endpoint">Endpoint:</label>
+                <input type="text" id="endpoint" name="endpoint" placeholder="ej: zabbix" required />
+
+                <label for="alias">Endpoint alias (Name):</label>
+                <input type="text" id="alias" name="alias" placeholder="ej: Alertas Glymax" required />
+
+                <fieldset>
+                    <legend>Recipients</legend>
+
+                    <div id="recipients-container">
+                        <div class="recipient-group">
+                            <input type="text" name="recipient-name" placeholder="Recipient Name" required />
+                            <input type="text" name="recipient-chatId" placeholder="Chat ID (example: 12345@g.us)"
+                                required />
+                        </div>
+                    </div>
+                    <button type="button" onclick="addRecipient()">Add another recipient +</button>
+                </fieldset>
+
+                <br />
+                <button type="submit">Register Endpoint</button>
+            </form>
+        </section>
+    </main>
+    <footer id="footer">
+        <hr />
+        <p>
+            Check Developer profile
+            <a href="https://github.com/pablolgamarra" target="_blank">Pablo Gamarra</a>
+        </p>
+    </footer>
+
+    <!-- Modal para editar endpoint -->
+    <div id="edit-endpoint-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>Edit Endpoint</h2>
+            <form id="edit-endpoint-form">
+                <input type="hidden" id="edit-endpoint-id" />
+                <label for="edit-endpoint">Endpoint:</label>
+                <input type="text" id="edit-endpoint" name="endpoint" required />
+
+                <label for="edit-alias">Alias:</label>
+                <input type="text" id="edit-alias" name="alias" required />
+
+                <fieldset>
+                    <legend>Recipients</legend>
+                    <div id="edit-recipients-container"></div>
+                    <button type="button" onclick="addEditRecipient()">Add recipient +</button>
+                </fieldset>
+
+                <div class="action-buttons">
+                    <button type="submit" class="save-btn">Save Changes</button>
+                    <button type="button" class="cancel-btn" onclick="closeEditModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+            let currentData = { recipients: [], endpoints: [] };
+
+            async function getRecipients() {
+                try {
+                    const recipientsEndpoint = '/api/v2/recipients';
+                    const mountingPoint = document.getElementById('alert-recipients-container');
+                    mountingPoint.innerHTML = '';
+
+                    const res = await fetch(recipientsEndpoint);
+                    const data = await res.json();
+                    currentData.recipients = data;
+
+                    for(const element of data){
+                        const nElement = document.createElement('li');
+                        nElement.innerHTML = `
+                            <div id="recipients-${element.endpoint}">
+                                <h4>'/webhook/${element.endpoint}' Alerts Recipients</h4>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>ChatID</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${element.recipients.map((recipient, index) => `
+                                            <tr class="recipient-row" id="recipient-${element.endpoint}-${index}">
+                                                <td>
+                                                    <span class="recipient-name">${recipient.name}</span>
+                                                    <input class="edit-input recipient-name-edit" value="${recipient.name}" style="display:none;" />
+                                                </td>
+                                                <td>
+                                                    <span class="recipient-chatid">${recipient.chatId}</span>
+                                                    <input class="edit-input recipient-chatid-edit" value="${recipient.chatId}" style="display:none;" />
+                                                </td>
+                                                <td class="recipient-actions">
+                                                    <div class="action-buttons">
+                                                        <button class="edit-btn" onclick="editRecipient('${element.endpoint}', ${index})">Edit</button>
+                                                        <button class="delete-btn" onclick="deleteRecipient('${element.endpoint}', ${index})">Delete</button>
+                                                    </div>
+                                                    <div class="action-buttons" style="display:none;">
+                                                        <button class="save-btn" onclick="saveRecipient('${element.endpoint}', ${index})">Save</button>
+                                                        <button class="cancel-btn" onclick="cancelEditRecipient('${element.endpoint}', ${index})">Cancel</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                        mountingPoint.appendChild(nElement);
+                    }
+                } catch (e) {
+                    console.log('Error when querying message recipients', e);
+                    alert('Error loading recipients');
+                }
+            }
+
+            async function getEndpoints() {
+                try {
+                    const endpointsEndpoint = '/api/v2/endpoints';
+                    const mountingPoint = document.getElementById('alert-endpoints-container');
+                    mountingPoint.innerHTML = '';
+
+                    const res = await fetch(endpointsEndpoint);
+                    const data = await res.json();
+                    currentData.endpoints = data;
+
+                    for(const element of data){
+                        const nElement = document.createElement('li');
+                        nElement.innerHTML = `
+                            <div id="endpoint-${element.webhook_endpoint}">
+                                <h3>${element.webhook_alias}</h3>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Endpoint</th>
+                                            <th>Alias</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>/webhooks/${element.webhook_endpoint}</td>
+                                            <td>${element.webhook_alias}</td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="edit-btn" onclick="editEndpoint('${element.webhook_endpoint}')">Edit</button>
+                                                    <button class="delete-btn" onclick="deleteEndpoint('${element.webhook_endpoint}')">Delete</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                        mountingPoint.appendChild(nElement);
+                    }
+                } catch (e) {
+                    console.log('Error when querying endpoints', e);
+                    alert('Error loading endpoints');
+                }
+            }
+
+            // Funciones para editar recipients
+            function editRecipient(endpoint, index) {
+                const row = document.getElementById(`recipient-${endpoint}-${index}`);
+                const nameSpan = row.querySelector('.recipient-name');
+                const chatIdSpan = row.querySelector('.recipient-chatid');
+                const nameEdit = row.querySelector('.recipient-name-edit');
+                const chatIdEdit = row.querySelector('.recipient-chatid-edit');
+                const actionButtons = row.querySelectorAll('.action-buttons');
+
+                // Mostrar inputs de edición
+                nameSpan.style.display = 'none';
+                chatIdSpan.style.display = 'none';
+                nameEdit.style.display = 'block';
+                chatIdEdit.style.display = 'block';
+
+                // Cambiar botones
+                actionButtons[0].style.display = 'none';
+                actionButtons[1].style.display = 'flex';
+            }
+
+            function cancelEditRecipient(endpoint, index) {
+                const row = document.getElementById(`recipient-${endpoint}-${index}`);
+                const nameSpan = row.querySelector('.recipient-name');
+                const chatIdSpan = row.querySelector('.recipient-chatid');
+                const nameEdit = row.querySelector('.recipient-name-edit');
+                const chatIdEdit = row.querySelector('.recipient-chatid-edit');
+                const actionButtons = row.querySelectorAll('.action-buttons');
+
+                // Ocultar inputs de edición
+                nameSpan.style.display = 'block';
+                chatIdSpan.style.display = 'block';
+                nameEdit.style.display = 'none';
+                chatIdEdit.style.display = 'none';
+
+                // Restaurar valores originales
+                const originalData = currentData.recipients.find(r => r.endpoint === endpoint);
+                if (originalData && originalData.recipients[index]) {
+                    nameEdit.value = originalData.recipients[index].name;
+                    chatIdEdit.value = originalData.recipients[index].chatId;
+                }
+
+                // Cambiar botones
+                actionButtons[0].style.display = 'flex';
+                actionButtons[1].style.display = 'none';
+            }
+
+            async function saveRecipient(endpoint, index) {
+                const row = document.getElementById(`recipient-${endpoint}-${index}`);
+                const nameEdit = row.querySelector('.recipient-name-edit');
+                const chatIdEdit = row.querySelector('.recipient-chatid-edit');
+
+                const newName = nameEdit.value.trim();
+                const newChatId = chatIdEdit.value.trim();
+
+                if (!newName || !newChatId) {
+                    alert('Name and Chat ID are required');
+                    return;
+                }
+
+                try {
+                    // Encontrar el endpoint completo con todos sus recipients
+                    const endpointData = currentData.recipients.find(r => r.endpoint === endpoint);
+                    if (!endpointData) {
+                        throw new Error('Endpoint not found');
+                    }
+
+                    // Actualizar el recipient específico
+                    const updatedRecipients = [...endpointData.recipients];
+                    updatedRecipients[index] = { name: newName, chatId: newChatId };
+
+                    // Obtener alias del endpoint
+                    const endpointInfo = currentData.endpoints.find(e => e.endpoint === endpoint);
+                    
+                    const payload = {
+                        webhook_endpoint: endpoint,
+                        webhook_alias: endpointInfo ? endpointInfo.alias : 'Unknown',
+                        recipients: updatedRecipients
+                    };
+
+                    row.classList.add('loading');
+                    
+                    const res = await fetch(`/api/v2/endpoints/${endpoint}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (res.ok) {
+                        // Actualizar la interfaz
+                        const nameSpan = row.querySelector('.recipient-name');
+                        const chatIdSpan = row.querySelector('.recipient-chatid');
+                        
+                        nameSpan.textContent = newName;
+                        chatIdSpan.textContent = newChatId;
+
+                        cancelEditRecipient(endpoint, index);
+                        
+                        // Recargar datos
+                        await getRecipients();
+                        
+                        alert('✅ Recipient updated successfully');
+                    } else {
+                        const error = await res.json();
+                        alert('❌ Error: ' + error.error);
+                    }
+                } catch (err) {
+                    console.error('Error updating recipient:', err);
+                    alert('❌ Unexpected error');
+                } finally {
+                    row.classList.remove('loading');
+                }
+            }
+
+            async function deleteRecipient(endpoint, index) {
+                if (!confirm('Are you sure you want to delete this recipient?')) {
+                    return;
+                }
+
+                try {
+                    const endpointData = currentData.recipients.find(r => r.endpoint === endpoint);
+                    if (!endpointData) {
+                        throw new Error('Endpoint not found');
+                    }
+
+                    // Remover el recipient del array
+                    const updatedRecipients = endpointData.recipients.filter((_, i) => i !== index);
+                    
+                    // Si no quedan recipients, podríamos eliminar todo el endpoint
+                    if (updatedRecipients.length === 0) {
+                        if (confirm('This will remove all recipients from the endpoint. Continue?')) {
+                            await deleteEndpoint(endpoint);
+                            return;
+                        } else {
+                            return;
+                        }
+                    }
+
+                    const endpointInfo = currentData.endpoints.find(e => e.endpoint === endpoint);
+                    
+                    const payload = {
+                        webhook_endpoint: endpoint,
+                        webhook_alias: endpointInfo ? endpointInfo.alias : 'Unknown',
+                        recipients: updatedRecipients
+                    };
+
+                    const res = await fetch(`/api/v2/endpoints/${endpoint}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (res.ok) {
+                        await getRecipients();
+                        alert('✅ Recipient deleted successfully');
+                    } else {
+                        const error = await res.json();
+                        alert('❌ Error: ' + error.error);
+                    }
+                } catch (err) {
+                    console.error('Error deleting recipient:', err);
+                    alert('❌ Unexpected error');
+                }
+            }
+
+            // Funciones para editar endpoints
+            function editEndpoint(endpoint) {
+                const endpointData = currentData.endpoints.find(e => e.endpoint === endpoint);
+                const recipientData = currentData.recipients.find(r => r.endpoint === endpoint);
+                
+                if (!endpointData) return;
+
+                document.getElementById('edit-endpoint-id').value = endpoint;
+                document.getElementById('edit-endpoint').value = endpointData.endpoint;
+                document.getElementById('edit-alias').value = endpointData.alias;
+
+                // Cargar recipients actuales
+                const container = document.getElementById('edit-recipients-container');
+                container.innerHTML = '';
+                
+                if (recipientData && recipientData.recipients) {
+                    recipientData.recipients.forEach((recipient, index) => {
+                        addEditRecipient(recipient.name, recipient.chatId);
+                    });
+                } else {
+                    addEditRecipient();
+                }
+
+                document.getElementById('edit-endpoint-modal').style.display = 'block';
+            }
+
+            function addEditRecipient(name = '', chatId = '') {
+                const container = document.getElementById('edit-recipients-container');
+                const group = document.createElement('div');
+                group.classList.add('recipient-group');
+                group.innerHTML = `
+                    <input type="text" name="edit-recipient-name" placeholder="Recipient Name" value="${name}" required />
+                    <input type="text" name="edit-recipient-chatId" placeholder="Chat ID (example: 12345@g.us)" value="${chatId}" required />
+                    <button type="button" onclick="this.parentElement.remove()">Remove</button>
+                `;
+                container.appendChild(group);
+            }
+
+            function closeEditModal() {
+                document.getElementById('edit-endpoint-modal').style.display = 'none';
+            }
+
+            async function deleteEndpoint(endpoint) {
+                if (!confirm(`Are you sure you want to delete the endpoint "${endpoint}" and all its recipients?`)) {
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`/api/v2/endpoints/${endpoint}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (res.ok) {
+                        await Promise.all([getRecipients(), getEndpoints()]);
+                        alert('✅ Endpoint deleted successfully');
+                    } else {
+                        const error = await res.json();
+                        alert('❌ Error: ' + error.error);
+                    }
+                } catch (err) {
+                    console.error('Error deleting endpoint:', err);
+                    alert('❌ Unexpected error');
+                }
+            }
+
+            // Event listeners
+            document.getElementById('edit-endpoint-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const originalEndpoint = document.getElementById('edit-endpoint-id').value;
+                const endpoint = document.getElementById('edit-endpoint').value.trim();
+                const alias = document.getElementById('edit-alias').value.trim();
+
+                const recipientGroups = document.querySelectorAll('#edit-recipients-container .recipient-group');
+                const recipients = [];
+
+                for (const group of recipientGroups) {
+                    const name = group.querySelector('input[name="edit-recipient-name"]').value.trim();
+                    const chatId = group.querySelector('input[name="edit-recipient-chatId"]').value.trim();
+
+                    if (name && chatId) {
+                        recipients.push({ name, chatId });
+                    }
+                }
+
+                if (recipients.length === 0) {
+                    alert('At least one recipient is required');
+                    return;
+                }
+
+                const payload = {
+                    webhook_endpoint: endpoint,
+                    webhook_alias: alias,
+                    recipients
+                };
+
+                try {
+                    const res = await fetch(`/api/v2/endpoints/${originalEndpoint}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (res.ok) {
+                        closeEditModal();
+                        await Promise.all([getRecipients(), getEndpoints()]);
+                        alert('✅ Endpoint updated successfully');
+                    } else {
+                        const error = await res.json();
+                        alert('❌ Error: ' + error.error);
+                    }
+                } catch (err) {
+                    console.error('Error updating endpoint:', err);
+                    alert('❌ Unexpected error');
+                }
+            });
+
+            // Función original para agregar recipient en formulario nuevo
+            function addRecipient() {
+                const container = document.getElementById('recipients-container');
+                const group = document.createElement('div');
+                group.classList.add('recipient-group');
+                group.innerHTML = `
+                    <input type="text" name="recipient-name" placeholder="Nombre del receptor" required />
+                    <input type="text" name="recipient-chatId" placeholder="Chat ID (ej: 12345@g.us)" required />
+                    <button type="button" onclick="this.parentElement.remove()">Remove</button>
+                `;
+                container.appendChild(group);
+            }
+
+            // Event listener para formulario de nuevo endpoint
+            document.getElementById('new-endpoint-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const endpoint = document.getElementById('endpoint').value.trim();
+                const alias = document.getElementById('alias').value.trim();
+
+                const recipientGroups = document.querySelectorAll('#recipients-container .recipient-group');
+                const recipients = [];
+
+                for (const group of recipientGroups) {
+                    const name = group.querySelector('input[name="recipient-name"]').value.trim();
+                    const chatId = group.querySelector('input[name="recipient-chatId"]').value.trim();
+
+                    if (name && chatId) {
+                        recipients.push({ name, chatId });
+                    }
+                }
+
+                const payload = {
+                    webhook_endpoint: endpoint,
+                    webhook_alias: alias,
+                    recipients
+                };
+
+                try {
+                    const res = await fetch('/api/v2/endpoints', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (res.ok) {
+                        alert('✅ Endpoint guardado correctamente');
+                        document.getElementById('new-endpoint-form').reset();
+                        
+                        // Resetear recipients container
+                        const container = document.getElementById('recipients-container');
+                        container.innerHTML = `
+                            <div class="recipient-group">
+                                <input type="text" name="recipient-name" placeholder="Recipient Name" required />
+                                <input type="text" name="recipient-chatId" placeholder="Chat ID (example: 12345@g.us)" required />
+                            </div>
+                        `;
+                        
+                        // Recargar datos
+                        await Promise.all([getRecipients(), getEndpoints()]);
+                    } else {
+                        const error = await res.json();
+                        alert('❌ Error: ' + error.error);
+                    }
+                } catch (err) {
+                    console.error('Error al guardar el endpoint', err);
+                    alert('❌ Error inesperado');
+                }
+            });
+
+            // Cerrar modal con click fuera de él
+            window.onclick = function(event) {
+                const modal = document.getElementById('edit-endpoint-modal');
+                if (event.target === modal) {
+                    closeEditModal();
+                }
+            }
+
+            // Cargar datos iniciales
+            getRecipients();
+            getEndpoints();
+    </script>
+</body>
+
+</html>

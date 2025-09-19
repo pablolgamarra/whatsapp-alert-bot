@@ -1,15 +1,20 @@
 services:
-    whatsapp-bot:
-        build: .
-        container_name: whatsapp-bot
-        ports:
-            - '2025:3000'
-        restart: unless-stopped
-        volumes:
-            - ./session:/app/session
-        networks:
-            - bot-net
+  whatsapp-bot:
+    build: .
+    container_name: whatsapp-bot
+    ports:
+      - '2025:3000'
+    restart: unless-stopped
+    volumes:
+      - ./data/auth:/app/auth
+      - ./data/cache:/app/cache
+      - ./data/bot/config:/app/src/bot/config
+    environment:
+      - NODE_ENV=production
+    user: "1000:1000"
+    networks:
+      - bot-net
 
 networks:
-    bot-net:
-        external: true
+  bot-net:
+    external: true

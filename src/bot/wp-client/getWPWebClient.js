@@ -10,12 +10,14 @@ const cachePath = path.join(__dirname, '../../../cache/bot');
 
 export default function getWAWebClient() {
 	return new Client({
-		authStrategy: new LocalAuth({dataPath:authPath}),
-        webVersionCache: {type: 'local', path: cachePath},
+		authStrategy: new LocalAuth({clientId: 'botcito', dataPath:authPath, rmMaxRetries: 3}),
+		webVersionCache: {path: cachePath},
+        deviceName: 'Wp Bot',
 		puppeteer: {
-			args: ['--no-sandbox', '--disable-setuid-sandbox'], 
+			args: ['--no-sandbox', '--disable-setuid-sandbox'],
 			ignoreHTTPSErrors: true,
 			dumpio: false,
 		},
+        takeoverOnConflict: true
 	});
 }
