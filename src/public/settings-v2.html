@@ -270,8 +270,8 @@
                     for(const element of data){
                         const nElement = document.createElement('li');
                         nElement.innerHTML = `
-                            <div id="endpoint-${element.endpoint}">
-                                <h3>${element.alias}</h3>
+                            <div id="endpoint-${element.webhook_endpoint}">
+                                <h3>${element.webhook_alias}</h3>
                                 <table>
                                     <thead>
                                         <tr>
@@ -282,12 +282,12 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>/webhook/${element.endpoint}</td>
-                                            <td>${element.alias}</td>
+                                            <td>/webhooks/${element.webhook_endpoint}</td>
+                                            <td>${element.webhook_alias}</td>
                                             <td>
                                                 <div class="action-buttons">
-                                                    <button class="edit-btn" onclick="editEndpoint('${element.endpoint}')">Edit</button>
-                                                    <button class="delete-btn" onclick="deleteEndpoint('${element.endpoint}')">Delete</button>
+                                                    <button class="edit-btn" onclick="editEndpoint('${element.webhook_endpoint}')">Edit</button>
+                                                    <button class="delete-btn" onclick="deleteEndpoint('${element.webhook_endpoint}')">Delete</button>
                                                 </div>
                                             </td>
                                         </tr>
