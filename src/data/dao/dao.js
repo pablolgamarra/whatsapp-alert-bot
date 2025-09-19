@@ -156,7 +156,7 @@ export async function getRecipients(filter) {
                             left join ${t4} as t4 
                             on t3.chat_type_id = t4.id `;
 		}
-        const rows = await getEndpointsWithRecipients(ssql);
+        const rows = await makePromiseQuery(ssql);
         const allRecipients = parseRowsToRecipientsObj(rows);
         return allRecipients;
     }catch(e){
