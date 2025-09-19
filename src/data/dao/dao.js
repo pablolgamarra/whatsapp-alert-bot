@@ -49,10 +49,10 @@ function parseRowsToRecipientsObj(rows){
 				};
             }
 
-            const dupRecipient = allEndpoints[key].recipients.find((r) => r.chatId == row.chat_id);
+            const dupRecipient = allRecipients[key].recipients.find((r) => r.chatId == row.chat_id);
 
             if (!dupRecipient) {
-                allEndpoints[key].recipients.push({ name: row.name, chatId: row.chat_id });
+                allRecipients[key].recipients.push({ name: row.name, chatId: row.chat_id });
             }
 
         })
