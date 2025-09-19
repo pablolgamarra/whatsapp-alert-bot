@@ -36,7 +36,7 @@
 
 			async function loadQRCode() {
 				try {
-					const res = await fetch('/api/qr');
+					const res = await fetch('/api/v2/qr');
 					const data = await res.json();
 					const qrContainer = document.getElementById('qr-container');
 
