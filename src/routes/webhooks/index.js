@@ -3,7 +3,7 @@ import { webhooksController } from "../../controllers/webhooks/webhooksControlle
 
 const router = Router();
 
-router.get(':source', webhooksController.getWebhookInfo);
-router.post(':source', webhooksController.processWebhook);
+router.get('/:source', webhooksController.getWebhookInfo);
+router.post('/:source', webhooksController.processWebhook);
 
 export default router;
