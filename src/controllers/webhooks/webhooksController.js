@@ -1,4 +1,5 @@
 import { getEndpoints } from '../../data/dao/dao.js';
+import sendMessage from '../../bot/handlers/sendMessage.js';
 
 export const webhooksController = {
     async processWebhook(req, res, next) {
@@ -6,7 +7,7 @@ export const webhooksController = {
             const { source } = req.params;
             const data = req.body;
 
-            // Validaciones básicas
+            // Validate route
             if (!source) {
                 return res.status(400).json({ 
                     error: 'Endpoint not configured',
@@ -21,7 +22,7 @@ export const webhooksController = {
                 });
             }
 
-            // Obtener configuración desde la base de datos
+            // Get webhook configuration from db
             const filter = `WHERE t1.url = '${source}'`;
             const webhookConfig = await getEndpoints(filter);
 
