@@ -31,7 +31,7 @@ RUN useradd -m -u 1001 nodebot
 WORKDIR /app
 
 # Crear directorios para auth y cache
-RUN mkdir -p /app/auth/bot /app/cache/bot && \
+RUN mkdir -p /app/auth/bot /app/cache/bot /app/persistance && \
     chown -R nodebot:nodebot /app
 
 # Copiar package.json
@@ -45,9 +45,20 @@ COPY --chown=nodebot:nodebot . .
 
 # Cambiar a usuario no root
 USER nodebot
-#
+
+# Healtcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:3000/ || exit 1
+
 # Exponer puerto del servidor web
 EXPOSE 3000
+
+# Variables default
+ENV NODE_ENV=production
+ENV DB_PATH=/app/persistance/
+ENV DB_FILENAME=botConfigs.db
+ENV AUTH_PATH=/app/auth
+ENV CACHE_PATH=/app/cache
 
 # Comando para iniciar el bot y el servidor
 CMD ["node", "./bin/main/main.js"]
