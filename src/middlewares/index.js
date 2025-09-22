@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 
 export const validateJSONReqs = (req, res, next) => {
 	if (req.method === 'POST' || req.method === 'PUT' || req.method === 'DELETE') {
-		if (!req.is('application/json')) {
+		if (req.get('Content-Type') !== 'application/json') {
 			return res.status(400).json({ error: 'Content-Type must be application/json' });
 		}
 	}
