@@ -15,7 +15,7 @@ services:
       - DB_FILENAME=botConfigs.db
       - AUTH_PATH=/app/auth
       - CACHE_PATH=/app/cache
-    user: "1000:1000"
+    user: "1001:1001"
     networks:
       - bot-net
 
