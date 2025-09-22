@@ -1,4 +1,4 @@
-import { getEndpoints, insertEndpoint, updateEndpoint } from "../../data/dao/dao.js";
+import { deleteEndpoint, getEndpoints, insertEndpoint, updateEndpoint } from "../../data/dao/dao.js";
 
 export const endpointsController = {
     async getAll(req, res, next) {
@@ -11,10 +11,10 @@ export const endpointsController = {
         }
     },
 
-    async getById(req, res, next) {
+    async getByEndpoint(req, res, next) {
         try{
-            const id = req.params.id;
-            const filter = ` WHERE t1.id = ${id}`
+            const url = req.params.endpoint;
+            const filter = ` WHERE t1.url = '${url}'`
             const allEndpoints = await getEndpoints(filter);
             return res.status(200).json(allEndpoints[0]);
         }catch(e){

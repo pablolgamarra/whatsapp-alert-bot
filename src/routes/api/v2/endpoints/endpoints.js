@@ -4,7 +4,7 @@ import { endpointsController } from '../../../../controllers/endpoints/endpoints
 const router = Router();
 
 router.get('/', endpointsController.getAll);
-router.get('/:id', endpointsController.getById);
+router.get('/:endpoint', endpointsController.getByEndpoint);
 router.post('/', endpointsController.create);
 router.put('/', endpointsController.update);
 router.delete('/', endpointsController.delete);
