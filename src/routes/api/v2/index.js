@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { validateJSONReqs } from '../../../middlewares/index.js';
 import endpointRoutes from './endpoints/endpoints.js';
 import recipientRoutes from './recipients/recipients.js';
+import chatTypesRoutes from './chatTypes/chatTypes.js';
 import qrRoutes from './qr/qr.js';
 
 const router = Router();
@@ -12,6 +13,7 @@ router.use(validateJSONReqs);
 //v2 Routes
 router.use('/endpoints', endpointRoutes);
 router.use('/recipients', recipientRoutes);
+router.use('/chat-types', chatTypesRoutes);
 router.use('/qr', qrRoutes);
 
 export default router;
