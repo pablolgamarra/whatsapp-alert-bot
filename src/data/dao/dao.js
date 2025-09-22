@@ -6,7 +6,6 @@ const t2 = TABLE_NAMES.ENDPOINT_RECIPIENTS_TABLE_NAME;
 const t3 = TABLE_NAMES.RECIPIENTS_TABLE_NAME;
 const t4 = TABLE_NAMES.CHAT_TYPES_TABLE_NAME;
 
-
 function parseRowsToEndpointObj(rows){
     try{
         const allEndpoints = {};
@@ -61,6 +60,28 @@ function parseRowsToRecipientsObj(rows){
     }catch(e){
         throw Error(`Error parsing rows to recipients object -> ${e}`);
     }
+}
+
+function parseRowsToChatTypesObj(rows) {
+	try {
+		const allChatTypes = {};
+
+		rows.forEach((row) => {
+			const key = row.url;
+
+			if (!allChatTypes[key]) {
+				allChatTypes[key] = {
+					id: row.id,
+					name: row.name,
+					postfix: row.postfix,
+				};
+			}
+		});
+
+		return Object.values(allChatTypes);
+	} catch (e) {
+		throw Error(`Error parsing rows to endpoints object -> ${e}`);
+	}
 }
 
 export function getEndpointsWithRecipients (filter){
@@ -319,4 +340,25 @@ export async function deleteEndpoint(obj) {
         await makePromiseRun("ROLLBACK");
         throw Error(`Error deleting endpoint from DB -> ${e}`);
     }
+}
+
+export async function getChatTypes(filter) {
+	try {
+		let ssql;
+
+		if (filter && filter.length > 0) {
+			ssql = `select * from ${t4} ${filter};`;
+		} else {
+			ssql = `select * from ${t4};`;
+		}
+
+
+        console.log(ssql);
+		const rows = await makePromiseQuery(ssql);
+		const allChatTypes = parseRowsToChatTypesObj(rows);
+        console.log(allChatTypes);
+		return allChatTypes;
+	} catch (e) {
+		throw `Error retrieving chat types -> ${e}`;
+	}
 }
