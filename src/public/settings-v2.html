@@ -213,7 +213,7 @@
                         const nElement = document.createElement('li');
                         nElement.innerHTML = `
                             <div id="recipients-${element.endpoint}">
-                                <h4>'/webhook/${element.endpoint}' Alerts Recipients</h4>
+                                <h4>'/webhooks/${element.endpoint}' Alerts Recipients</h4>
                                 <table>
                                     <thead>
                                         <tr>
@@ -440,7 +440,7 @@
                         }
                     }
 
-                    const endpointInfo = currentData.endpoints.find(e => e.endpoint === endpoint);
+                    const endpointInfo = currentData.endpoints.find(e => e.webhook_endpoint === endpoint);
                     
                     const payload = {
                         webhook_endpoint: endpoint,
@@ -515,8 +515,21 @@
                 }
 
                 try {
-                    const res = await fetch(`/api/v2/endpoints/${endpoint}`, {
-                        method: 'DELETE'
+
+                    const endpointInfo = currentData.endpoints.find(e => e.webhook_endpoint === endpoint);
+
+                    const payload = {
+                        webhook_endpoint: endpoint,
+                        webhook_alias: endpointInfo ? endpointInfo.alias : 'Unknown',
+                        recipients: []
+                    };
+
+                    console.log(payload);
+
+                    const res = await fetch(`/api/v2/endpoints`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
                     });
 
                     if (res.ok) {
