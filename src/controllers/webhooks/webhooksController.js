@@ -6,7 +6,7 @@ export const webhooksController = {
         try {
             const { source } = req.params;
             const data = req.body;
-
+            
             // Validate route
             if (!source) {
                 return res.status(400).json({ 
@@ -22,48 +22,77 @@ export const webhooksController = {
                 });
             }
 
-            // Get webhook configuration from db
-            const filter = `WHERE t1.url = '${source}'`;
-            const webhookConfig = await getEndpoints(filter);
+            let results;
 
-            if (!webhookConfig || webhookConfig.length === 0) {
-                return res.status(404).json({ 
-                    error: `Webhook configuration not found for: ${source}`,
-                    code: 'WEBHOOK_NOT_FOUND'
-                });
-            }
+            if (!data.recipients) {
+				// Get webhook configuration from db
+				const filter = `WHERE t1.url = '${source}'`;
+				const webhookConfig = await getEndpoints(filter);
 
-            const webhook = webhookConfig[0];
-            const alertRecipients = webhook.recipients;
+				if (!webhookConfig || webhookConfig.length === 0) {
+					return res.status(404).json({
+						error: `Webhook configuration not found for: ${source}`,
+						code: 'WEBHOOK_NOT_FOUND',
+					});
+				}
 
-            if (!alertRecipients || !Array.isArray(alertRecipients) || alertRecipients.length === 0) {
-                return res.status(404).json({ 
-                    error: `Recipients for ${source} not configured`,
-                    code: 'NO_RECIPIENTS'
-                });
-            }
+				const webhook = webhookConfig[0];
+				const alertRecipients = webhook.recipients;
 
-            // Procesar el mensaje para cada recipient
-            const results = await Promise.allSettled(
-                alertRecipients.map(async (recipient) => {
-                    try {
-                        await sendMessage(recipient.chatId, data.message);
-                        return { 
-                            recipient: recipient.name, 
-                            chatId: recipient.chatId, 
-                            status: 'sent' 
-                        };
-                    } catch (error) {
-                        console.error(`❌ Error sending to ${recipient.name}:`, error);
-                        throw {
-                            recipient: recipient.name,
-                            chatId: recipient.chatId,
-                            status: 'failed',
-                            error: error.message
-                        };
-                    }
-                })
-            );
+				if (!alertRecipients || !Array.isArray(alertRecipients) || alertRecipients.length === 0) {
+					return res.status(404).json({
+						error: `Recipients for ${source} not configured`,
+						code: 'NO_RECIPIENTS',
+					});
+				}
+
+				// Procesar el mensaje para cada recipient
+				results = await Promise.allSettled(
+					alertRecipients.map(async (recipient) => {
+						try {
+							await sendMessage(recipient.chatId, data.message);
+							return {
+								recipient: recipient.name,
+								chatId: recipient.chatId,
+								status: 'sent',
+							};
+						} catch (error) {
+							console.error(`❌ Error sending to ${recipient.name}:`, error);
+							throw {
+								recipient: recipient.name,
+								chatId: recipient.chatId,
+								status: 'failed',
+								error: error.message,
+							};
+						}
+					}),
+				);
+			} else {
+                // Enviar mensaje a los recipients recibidos en la llamada del webhook, pero recibe los recipients en el body del request tambien
+				const recipients = data.recipients;
+
+				// Procesar el mensaje para cada recipient
+				results = await Promise.allSettled(
+					recipients.map(async (recipient) => {
+						try {
+							await sendMessage(recipient.chatId, data.message);
+							return {
+								recipient: recipient.name,
+								chatId: recipient.chatId,
+								status: 'sent',
+							};
+						} catch (error) {
+							console.error(`❌ Error sending to ${recipient.name}:`, error);
+							throw {
+								recipient: recipient.name,
+								chatId: recipient.chatId,
+								status: 'failed',
+								error: error.message,
+							};
+						}
+					}),
+				);
+			}
 
             // Analizar resultados
             const successful = results.filter(r => r.status === 'fulfilled');
